@@ -1,0 +1,142 @@
+{
+    "header": {
+        "title": "เว็บคำนวณสูตรคณิตศาสตร์"
+    },
+    "nav": {
+        "basic": "พื้นฐาน",
+        "profile": "ประวัติส่วนตัว",
+        "percentage": "เปอร์เซ็นต์",
+        "bmi": "ดัชนีมวลกาย (BMI)",
+        "unit_conversion": "แปลงหน่วย",
+        "length": "- ความยาว",
+        "area": "- พื้นที่",
+        "volume": "- ปริมาตร",
+        "geometry": "เรขาคณิต",
+        "circle": "- วงกลม",
+        "rectangle": "- สี่เหลี่ยม",
+        "triangle": "- สามเหลี่ยม",
+        "pentagon": "- ห้าเหลี่ยม",
+        "cube": "- ลูกบาศก์ (ปริมาตร)",
+        "sphere": "- ทรงกลม (ปริมาตร)",
+        "cylinder": "- ทรงกระบอก (ปริมาตร)"
+    },
+    "common": {
+        "calculate": "คำนวณ",
+        "clear": "ล้างค่า",
+        "result": "ผลลัพธ์:",
+        "enter_value": "ใส่ค่า...",
+        "error_nan": "กรุณาใส่ตัวเลขให้ครบทั้งสองช่อง",
+        "error_nan_single": "กรุณาใส่ตัวเลขให้ถูกต้อง",
+        "error_divide_by_zero": "ไม่สามารถหารด้วยศูนย์ได้",
+        "copied": "คัดลอกแล้ว!",
+        "history_title": "ประวัติการคำนวณ",
+        "clear_history": "ล้างประวัติ"
+    },
+    "profile": {
+        "title": "ประวัติส่วนตัว",
+        "back_to_calculator": "กลับไปหน้าคำนวณ",
+        "name": "ชื่อของคุณ"
+    },
+    "basic_arithmetic": {
+        "title": "คำนวณพื้นฐาน (Basic)",
+        "num1_placeholder": "ใส่ตัวเลขแรก",
+        "num2_placeholder": "ใส่ตัวเลขที่สอง",
+        "add_number": "เพิ่มตัวเลข"
+    },
+    "circle": {
+        "title": "คำนวณเกี่ยวกับวงกลม",
+        "op_find_area": "หาพื้นที่ (จากรัศมี)",
+        "op_find_circumference": "หาเส้นรอบวง (จากรัศมี)",
+        "op_find_diameter": "หาเส้นผ่านศูนย์กลาง (จากรัศมี)",
+        "op_find_radius_from_area": "หารัศมี (จากพื้นที่)",
+        "op_find_radius_from_circumference": "หารัศมี (จากเส้นรอบวง)",
+        "radius_placeholder": "ใส่รัศมี (r)",
+        "area_placeholder": "ใส่พื้นที่",
+        "circumference_placeholder": "ใส่เส้นรอบวง",
+        "error_radius": "กรุณาใส่รัศมีให้ถูกต้อง",
+        "error_area": "กรุณาใส่พื้นที่ให้ถูกต้อง",
+        "error_circumference": "กรุณาใส่เส้นรอบวงให้ถูกต้อง"
+    },
+    "rectangle": {
+        "title": "คำนวณเกี่ยวกับสี่เหลี่ยม",
+        "op_find_area": "หาพื้นที่",
+        "op_find_perimeter": "หาเส้นรอบรูป",
+        "op_find_width": "หาความกว้าง (จากพื้นที่)",
+        "op_find_height": "หาความสูง (จากพื้นที่)",
+        "width_placeholder": "ใส่ความกว้าง",
+        "height_placeholder": "ใส่ความสูง",
+        "area_placeholder": "ใส่พื้นที่",
+        "error_size": "กรุณาใส่ความกว้างและความสูง"
+    },
+    "triangle": {
+        "title": "คำนวณพื้นที่สามเหลี่ยม",
+        "op_find_area": "หาพื้นที่",
+        "op_find_height": "หาความสูง",
+        "op_find_base": "หาความยาวฐาน",
+        "base_placeholder": "ใส่ความยาวฐาน",
+        "height_placeholder": "ใส่ความสูง",
+        "area_placeholder": "ใส่พื้นที่",
+        "error_size": "กรุณาใส่ความยาวฐานและความสูง"
+    },
+    "pentagon": {
+        "title": "คำนวณพื้นที่ห้าเหลี่ยมด้านเท่า",
+        "side_placeholder": "ใส่ความยาวด้าน",
+        "error_side": "กรุณาใส่ความยาวด้านให้ถูกต้อง"
+    },
+    "cube": {
+        "title": "ปริมาตรลูกบาศก์",
+        "op_find_volume": "หาปริมาตร",
+        "op_find_side": "หาความยาวด้าน (จากปริมาตร)",
+        "side_placeholder": "ใส่ความยาวด้าน",
+        "volume_placeholder": "ใส่ปริมาตร",
+        "error_side": "กรุณาใส่ความยาวด้านให้ถูกต้อง",
+        "error_volume": "กรุณาใส่ปริมาตรให้ถูกต้อง"
+    },
+    "sphere": {
+        "title": "ปริมาตรทรงกลม",
+        "op_find_volume": "หาปริมาตร",
+        "op_find_radius": "หารัศมี (จากปริมาตร)",
+        "radius_placeholder": "ใส่รัศมี (r)",
+        "volume_placeholder": "ใส่ปริมาตร",
+        "error_radius": "กรุณาใส่ค่ารัศมีให้ถูกต้อง",
+        "error_volume": "กรุณาใส่ปริมาตรให้ถูกต้อง"
+    },
+    "cylinder": {
+        "title": "ปริมาตรทรงกระบอก",
+        "radius_placeholder": "ใส่รัศมี (r)",
+        "height_placeholder": "ใส่ความสูง",
+        "error_size": "กรุณาใส่รัศมีและความสูง"
+    },
+    "percentage": {
+        "title": "คำนวณเปอร์เซ็นต์และส่วนลด",
+        "op_percent_of": "หาค่า X % ของ Y",
+        "op_what_percent": "X เป็นกี่ % ของ Y",
+        "op_discount": "คำนวณส่วนลด",
+        "placeholder_x_percent": "X (%)",
+        "placeholder_y_total": "Y (ค่าทั้งหมด)",
+        "placeholder_x_part": "X (ส่วนหนึ่ง)",
+        "placeholder_full_price": "ราคาเต็ม",
+        "placeholder_discount_percent": "ส่วนลด (%)",
+        "result_discount": "ส่วนลด {val2}%",
+        "price_after_discount": "ราคาหลังหักส่วนลด:",
+        "you_saved": "ประหยัดไป:"
+    },
+    "bmi": {
+        "title": "คำนวณดัชนีมวลกาย (BMI)",
+        "weight_placeholder": "น้ำหนัก (kg)",
+        "height_placeholder": "ส่วนสูง (cm)",
+        "your_bmi": "ค่า BMI ของคุณ:",
+        "interpretation": "ผลการประเมิน:",
+        "error_wh": "กรุณาใส่น้ำหนักและส่วนสูงให้ถูกต้อง",
+        "interp_underweight": "น้ำหนักน้อยกว่าเกณฑ์",
+        "interp_normal": "สมส่วน",
+        "interp_overweight": "น้ำหนักเกิน",
+        "interp_obese1": "โรคอ้วนระดับที่ 1",
+        "interp_obese2": "โรคอ้วนระดับที่ 2 (อันตราย)"
+    },
+    "converter": {
+        "length_title": "แปลงหน่วยความยาว",
+        "area_title": "แปลงหน่วยพื้นที่",
+        "volume_title": "แปลงหน่วยปริมาตร"
+    }
+}
