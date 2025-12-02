@@ -1,322 +1,275 @@
-/* --- Color Variables --- */
+/* --- ตัวแปรสีและฟอนต์ --- */
 :root {
-    --bg-color: #f4f7f9;
-    --section-bg-color: #ffffff;
-    --text-color: #333;
-    --header-bg-color: #ffffff;
-    --header-text-color: #2c3e50;
-    --nav-text-color: #34495e;
-    --nav-hover-bg: #ecf0f1;
-    --active-bg: #3498db;
-    --active-text: #ffffff;
-    --submenu-active-bg: #aed6f1;
-    --submenu-active-text: #1b4f72;
-    --border-color: #ecf0f1;
-    --subtle-border-color: #e0e0e0;
-    --input-border-color: #ccc;
-    --input-focus-border: #3498db;
-    --result-span-color: #3498db;
-    --shadow-color: rgba(0, 0, 0, 0.07);
+    --primary-color: #3a7bfd;
+    --secondary-color: #7e57c2;
+    --background-color: #f4f7f9;
+    --surface-color: #ffffff;
+    --text-color: #2c3e50;
+    --text-secondary-color: #7f8c8d;
+    --border-color: #e0e6ed;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    --font-family: 'Poppins', sans-serif;
 }
 
 body.dark-mode {
-    --bg-color: #121212;
-    --section-bg-color: #1e1e1e;
-    --text-color: #e0e0e0;
-    --header-bg-color: #1e1e1e;
-    --header-text-color: #e0e0e0;
-    --nav-text-color: #e0e0e0;
-    --nav-hover-bg: #333333;
-    --active-bg: #bb86fc;
-    --active-text: #121212;
-    --submenu-active-bg: #3700b3;
-    --submenu-active-text: #e0e0e0;
-    --border-color: #2c2c2c;
-    --subtle-border-color: #333;
-    --input-border-color: #444;
-    --input-focus-border: #bb86fc;
-    --result-span-color: #03dac6;
-    --shadow-color: rgba(255, 255, 255, 0.05);
+    --primary-color: #4585fc;
+    --secondary-color: #9575cd;
+    --background-color: #1a1d24;
+    --surface-color: #252932;
+    --text-color: #e2e8f0;
+    --text-secondary-color: #94a3b8;
+    --border-color: #3c4251;
 }
 
-/* --- General Body and Typography --- */
+/* --- สไตล์พื้นฐาน --- */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    background-color: var(--bg-color);
+    font-family: var(--font-family);
+    background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.6;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- Header and Footer --- */
+/* --- Layout หลัก --- */
+.container {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    gap: 25px;
+    padding: 20px;
+    align-items: flex-start;
+}
+
 header {
-    background-color: var(--header-bg-color);
-    color: var(--header-text-color);
-    padding: 1rem 2rem; /* Adjusted padding for a tighter look */
+    background-color: var(--surface-color);
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    border-bottom: 3px solid var(--active-bg);
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 header h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--primary-color);
     margin: 0;
-    font-size: 2rem;
 }
 
 footer {
     text-align: center;
-    padding: 1.5rem;
-    margin-top: 2rem;
+    padding: 20px;
+    margin-top: 20px;
     font-size: 0.9em;
-    color: var(--text-color);
+    color: var(--text-secondary-color);
 }
 
-/* --- Main Layout Container --- */
-.container {
-    display: grid;
-    grid-template-columns: 260px 1fr 280px; /* Nav | Main | History */
-    max-width: 1400px;
-    margin: 2rem auto;
-    gap: 2rem;
-    padding: 0 2rem;
+main, nav, aside {
+    background-color: var(--surface-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
 }
 
-/* --- Navigation Panel (Left Side) --- */
-nav {
-    background-color: var(--section-bg-color);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    padding: 1rem;
-    height: fit-content;
-}
-
+/* --- Navigation Menu --- */
 nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.nav-item-profile {
-    padding-top: 10px;
-    margin-top: 10px;
-    border-top: 1px solid var(--subtle-border-color);
-}
-
 .nav-button {
     display: block;
     width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 5px;
-    background-color: transparent;
-    border: none;
-    border-radius: 6px;
     text-align: left;
-    font-size: 1rem;
-    color: var(--nav-text-color);
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-secondary-color);
+    transition: background-color 0.2s, color 0.2s;
+    border: none; /* Reset default button border */
+    background: none; /* Reset default button background */
+    cursor: pointer; /* Ensure cursor is a pointer */
 }
 
-.nav-button:hover {
-    background-color: var(--nav-hover-bg);
+.nav-button.active, .nav-button:hover {
+    background-color: var(--primary-color);
+    color: #fff;
 }
 
-.nav-button.active {
-    background-color: var(--active-bg);
-    color: var(--active-text);
-    font-weight: bold;
+.nav-button.has-submenu.active {
+     background-color: #e8f0fe;
+     color: var(--primary-color);
+}
+body.dark-mode .nav-button.has-submenu.active {
+    background-color: rgba(69, 133, 252, 0.15);
 }
 
-/* Submenu Styles */
 .submenu {
     display: none; /* Hidden by default */
-    padding-left: 15px;
-    margin-top: 5px;
 }
 
 .submenu .nav-button {
-    font-size: 0.95rem;
-    color: var(--nav-text-color);
+    padding-left: 30px;
+    font-size: 0.9em;
+    color: var(--text-secondary-color);
 }
 
 .submenu .nav-button.active {
-    background-color: var(--submenu-active-bg);
-    color: var(--submenu-active-text);
+    background-color: var(--primary-color);
+    color: #fff;
 }
 
-.nav-button.has-submenu.open {
-    background-color: #eaf2f8;
-}
-
-/* --- Main Content Area (Right Side) --- */
-main {
-    /* Main content will fill the available space */
-}
-
+/* --- Calculator Section --- */
 .calculator-section {
-    background-color: var(--section-bg-color);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px var(--shadow-color);
+    padding: 25px;
+    border: none;
     animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .calculator-section h2 {
     margin-top: 0;
-    color: var(--header-text-color);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    display: inline-block;
 }
 
-.calculator-section .input-group {
+/* --- ฟอร์มและปุ่ม --- */
+input[type="number"], select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 1em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="number"]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(58, 123, 253, 0.2);
+}
+
+.button-group {
     display: flex;
-    flex-wrap: wrap;
     gap: 10px;
-    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-/* --- Dynamic Inputs for Basic Calculator --- */
-#basic-inputs-container {
+.btn-primary, .btn-secondary {
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn-primary:hover { filter: brightness(110%); }
+.btn-secondary:hover { background-color: var(--background-color); }
+
+.btn-primary:active, .btn-secondary:active {
+    transform: translateY(1px);
+}
+
+/* --- Dynamic Input Rows (Stats & Basic) --- */
+.stats-inputs-container, #basic-inputs-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-bottom: 1.5rem;
 }
 
-.basic-input-row {
+.stat-input-row, .basic-input-row {
     display: flex;
     gap: 10px;
-}
-
-/* --- Form Elements Styling (Inputs, Selects, Buttons) --- */
-input[type="number"],
-select {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid var(--input-border-color);
-    border-radius: 5px;
-    margin: 5px;
-    flex: 1; /* Allow inputs to grow */
-    transition: border-color 0.2s ease;
-}
-
-.basic-input-row select {
-    flex: 0 0 80px; /* Fixed width for operator */
-}
-
-input[type="number"]:focus,
-select:focus {
-    outline: none;
-    border-color: var(--input-focus-border);
-}
-
-/* --- Button Styles --- */
-.button-group {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 10px;
-}
-
-.btn-remove-row {
-    flex-shrink: 0;
-    background-color: transparent;
-    border: 1px solid var(--subtle-border-color);
-    color: var(--text-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    align-self: center;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    padding: 0;
-}
-
-.btn-primary,
-.btn-secondary {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.btn-primary:active,
-.btn-secondary:active {
-    transform: translateY(1px); /* Slight press effect */
-}
-
-/* Primary Button (Calculate) */
-.btn-primary {
-    background-color: var(--active-bg);
-    color: var(--active-text);
-    flex-grow: 1; /* Make primary button larger */
-}
-
-.btn-primary:hover {
-    filter: brightness(90%);
-}
-
-/* Secondary Button (Clear) */
-.btn-secondary {
-    background-color: transparent;
-    color: var(--text-color);
-    border: 1px solid var(--subtle-border-color);
-}
-
-.btn-secondary:hover {
-    background-color: var(--nav-hover-bg);
-}
-
-/* Result and Other Paragraphs */
-.calculator-section p {
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-    display: flex;
     align-items: center;
 }
 
-.calculator-section p > span:first-child {
-    margin-right: 8px;
+.stat-input-row input, .basic-input-row input {
+    margin-bottom: 0; /* Override default margin */
 }
 
-.calculator-section p > span:not(:first-child) {
+.btn-remove-row {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.4em;
+    line-height: 0;
+    transition: all 0.2s;
+}
+
+.btn-remove-row:hover {
+    background-color: var(--error-color);
+    color: #fff;
+    border-color: var(--error-color);
+}
+
+/* --- Result Display --- */
+.calculator-section p {
+    margin-top: 20px;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.calculator-section p > span[data-output] {
     font-weight: bold;
-    color: var(--result-span-color);
+    color: var(--primary-color);
+    margin-left: 8px;
 }
 
 .copy-btn {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1em;
     margin-left: 10px;
-    padding: 2px 6px;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-    color: var(--text-color); /* ให้สีไอคอนเหมือนข้อความปกติ */
+    color: var(--text-secondary-color);
+    transition: color 0.2s;
 }
 
 .copy-btn:hover {
-    background-color: var(--nav-hover-bg);
+    color: var(--primary-color);
 }
 
 /* --- Header Controls (Language and Dark Mode) --- */
@@ -327,26 +280,27 @@ select:focus {
 }
 
 .lang-btn {
-    background-color: var(--nav-hover-bg);
-    color: var(--nav-text-color);
-    border: 1px solid var(--input-border-color);
-    padding: 5px 10px;
+    background-color: var(--background-color);
+    color: var(--text-secondary-color);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: 500;
 }
 
 .lang-btn.active {
-    background-color: var(--active-bg);
-    color: var(--active-text);
-    border-color: var(--active-bg);
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
 }
 
-.dark-mode-btn {
+#dark-mode-toggle {
     background: none;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--text-color);
+    color: var(--text-secondary-color);
 }
 
 /* --- History Panel --- */
@@ -354,16 +308,14 @@ select:focus {
     background-color: var(--section-bg-color);
     border-radius: 8px;
     box-shadow: 0 2px 8px var(--shadow-color);
-    padding: 1rem;
-    height: fit-content;
-    max-height: 70vh; /* Limit height and allow scrolling */
+    padding: 20px;
+    max-height: 80vh; /* Limit height and allow scrolling */
     display: flex;
     flex-direction: column;
 }
 
 #history-panel h3 {
     margin-top: 0;
-    padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--border-color);
 }
 
@@ -376,7 +328,7 @@ select:focus {
 }
 
 .history-item {
-    padding: 10px;
+    padding: 12px 5px;
     border-bottom: 1px solid var(--subtle-border-color);
     font-size: 0.9rem;
 }
@@ -393,11 +345,11 @@ select:focus {
 
 .history-item .result {
     font-weight: bold;
-    color: var(--result-span-color);
+    color: var(--primary-color);
 }
 
 .history-footer {
-    margin-top: 1rem;
+    margin-top: 20px;
 }
 
 /* --- Responsive Design for Smaller Screens --- */
@@ -405,64 +357,20 @@ select:focus {
     .container {
         grid-template-columns: 260px 1fr; /* Nav | Main */
     }
-
-    nav {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
     #history-panel {
         grid-column: 1 / -1; /* Span across all columns */
-        margin-top: 1rem;
         max-height: 300px; /* Adjust height for horizontal layout */
     }
 }
 
 @media (max-width: 768px) {
     .container {
-        grid-template-columns: 1fr; /* Single column */
-        padding: 0 1rem;
-        margin-top: 1rem;
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 15px;
     }
 
     header h1 {
         font-size: 1.5rem;
     }
-
-    .calculator-section {
-        padding: 1.5rem;
-    }
-
-    input[type="number"],
-    select {
-        width: calc(100% - 20px); /* Make inputs full-width on mobile */
-        box-sizing: border-box;
-    }
-}
-
-/* --- Profile Page Specific Styles --- */
-.profile-page.container {
-    grid-template-columns: 1fr; /* Profile page has only one main column */
-    max-width: 900px;
-}
-
-.profile-card {
-    text-align: center;
-}
-
-.profile-pic {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 5px solid var(--border-color);
-    box-shadow: 0 4px 10px var(--shadow-color);
-    margin-bottom: 1rem;
-}
-
-.profile-card hr {
-    border: none;
-    border-top: 1px solid var(--subtle-border-color);
-    margin: 1.5rem auto;
-    width: 50%;
 }

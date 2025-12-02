@@ -5,14 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Math Formula Calculator</title>
         <link rel="stylesheet" href="styles.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     </head>
     <body>
         <header>
             <h1 data-lang-key="header.title">Math Formula Calculator</h1>
             <div class="header-controls">
                 <div class="lang-switcher">
-                    <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                    <button onclick="switchLanguage('th')" class="lang-btn">TH</button>
+                    <button data-action="switch-lang" data-lang="en" class="lang-btn active">EN</button>
+                    <button data-action="switch-lang" data-lang="th" class="lang-btn">TH</button>
                 </div>
                 <button id="dark-mode-toggle" class="dark-mode-btn">🌙</button>
             </div>
@@ -20,28 +23,46 @@
         <div class="container">
             <nav>
                 <ul>
-                    <li><button class="nav-button active" onclick="showCalculator('basic-arithmetic', this)" data-lang-key="nav.basic">Basic</button></li>
-                    <li><button class="nav-button" onclick="showCalculator('percentage', this)" data-lang-key="nav.percentage">Percentage</button></li>
-                    <li><button class="nav-button" onclick="showCalculator('bmi', this)" data-lang-key="nav.bmi">Body Mass Index (BMI)</button></li>
+                    <li><button class="nav-button active" data-action="show-calculator" data-calculator-id="basic-arithmetic" data-lang-key="nav.basic">Basic</button></li>
+                    <li><button class="nav-button" data-action="show-calculator" data-calculator-id="percentage" data-lang-key="nav.percentage">Percentage</button></li>
+                    <li><button class="nav-button" data-action="show-calculator" data-calculator-id="bmi" data-lang-key="nav.bmi">Body Mass Index (BMI)</button></li>
                     <li>
-                        <button class="nav-button has-submenu" onclick="toggleSubMenu(this)" data-lang-key="nav.unit_conversion">Unit Conversion</button>
+                        <button class="nav-button has-submenu" data-action="toggle-submenu" data-lang-key="nav.unit_conversion">Unit Conversion</button>
                         <ul class="submenu" id="unit-converter-submenu">
-                            <li><button class="nav-button" onclick="showCalculator('length-converter', this)" data-lang-key="nav.length">- Length</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('area-converter', this)" data-lang-key="nav.area">- Area</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('volume-converter', this)" data-lang-key="nav.volume">- Volume</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="length-converter" data-lang-key="nav.length">- Length</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="area-converter" data-lang-key="nav.area">- Area</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="volume-converter" data-lang-key="nav.volume">- Volume</button></li>
                         </ul>
                     </li>
                     <li>
-                        <button class="nav-button has-submenu" onclick="toggleSubMenu(this)" data-lang-key="nav.geometry">Geometry</button>
+                        <button class="nav-button has-submenu" data-action="toggle-submenu" data-lang-key="nav.geometry">Geometry</button>
                         <ul class="submenu" id="geometry-submenu">
-                            <li><button class="nav-button" onclick="showCalculator('circle', this)" data-lang-key="nav.circle">- Circle</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('rectangle', this)" data-lang-key="nav.rectangle">- Rectangle</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('triangle', this)" data-lang-key="nav.triangle">- Triangle</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('pentagon', this)" data-lang-key="nav.pentagon">- Pentagon</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="circle" data-lang-key="nav.circle">- Circle</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="rectangle" data-lang-key="nav.rectangle">- Rectangle</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="triangle" data-lang-key="nav.triangle">- Triangle</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="pentagon" data-lang-key="nav.pentagon">- Pentagon</button></li>
                             <!-- Volume Calculators -->
-                            <li><button class="nav-button" onclick="showCalculator('cube', this)" data-lang-key="nav.cube">- Cube (Volume)</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('sphere', this)" data-lang-key="nav.sphere">- Sphere (Volume)</button></li>
-                            <li><button class="nav-button" onclick="showCalculator('cylinder', this)" data-lang-key="nav.cylinder">- Cylinder (Volume)</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="cube" data-lang-key="nav.cube">- Cube (Volume)</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="sphere" data-lang-key="nav.sphere">- Sphere (Volume)</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="cylinder" data-lang-key="nav.cylinder">- Cylinder (Volume)</button></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button class="nav-button has-submenu" data-action="toggle-submenu" data-lang-key="nav.finance">การเงิน</button>
+                        <ul class="submenu" id="finance-submenu">
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="interest-calculator" data-lang-key="nav.interest">- คำนวนดอกเบี้ย</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="loan-calculator" data-lang-key="nav.loan">- สินเชื่อ</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="other-finance-calculator" data-lang-key="nav.other_finance">- อื่นๆ</button></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button class="nav-button has-submenu" data-action="toggle-submenu" data-lang-key="nav.statistics">สถิติ</button>
+                        <ul class="submenu" id="statistics-submenu">
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="mean-calculator" data-lang-key="nav.mean">- ค่าเฉลี่ย (Mean)</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="median-calculator" data-lang-key="nav.median">- มัธยฐาน (Median)</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="mode-calculator" data-lang-key="nav.mode">- ฐานนิยม (Mode)</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="std-dev-calculator" data-lang-key="nav.std_dev">- ค่าเบี่ยงเบนมาตรฐาน</button></li>
+                            <li><button class="nav-button" data-action="show-calculator" data-calculator-id="other-stats-calculator" data-lang-key="nav.other_stats">- อื่นๆ</button></li>
                         </ul>
                     </li>
                     <li class="nav-item-profile"><a href="profile.html" class="nav-button" data-lang-key="nav.profile">Creator</a></li>
@@ -55,17 +76,17 @@
                         <!-- Dynamic inputs will be generated here by script.js -->
                     </div>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
-                        <button class="btn-secondary" onclick="addBasicInput()" data-lang-key="basic_arithmetic.add_number">Add Number</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-secondary" data-action="add-basic-input" data-lang-key="basic_arithmetic.add_number">Add Number</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขวงกลม (ซ่อนไว้ก่อน) -->
                 <section id="circle" class="calculator-section" style="display: none;" data-calculator="circle">
                     <h2 data-lang-key="circle.title">Circle Calculations</h2>
-                    <select data-input="operation" onchange="updateCalculatorInputs(this)">
+                    <select data-input="operation" data-action="update-inputs">
                         <option value="area" data-lang-key="circle.op_find_area">Find Area (from radius)</option>
                         <option value="circumference" data-lang-key="circle.op_find_circumference">Find Circumference (from radius)</option>
                         <option value="diameter" data-lang-key="circle.op_find_diameter">Find Diameter (from radius)</option>
@@ -78,16 +99,16 @@
                     <div class="input-group" data-mode="radius_from_area" style="display: none;"><input type="number" data-input="area" placeholder="Enter area" data-lang-key="circle.area_placeholder" /></div>
                     <div class="input-group" data-mode="radius_from_circumference" style="display: none;"><input type="number" data-input="circumference" placeholder="Enter circumference" data-lang-key="circle.circumference_placeholder" /></div>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขสี่เหลี่ยม -->
                 <section id="rectangle" class="calculator-section" style="display: none;" data-calculator="rectangle">
                     <h2 data-lang-key="rectangle.title">Rectangle Calculations</h2>
-                    <select data-input="operation" onchange="updateCalculatorInputs(this)">
+                    <select data-input="operation" data-action="update-inputs">
                         <option value="area" data-lang-key="rectangle.op_find_area">Find Area</option>
                         <option value="perimeter" data-lang-key="rectangle.op_find_perimeter">Find Perimeter</option>
                         <option value="width" data-lang-key="rectangle.op_find_width">Find Width (from area)</option>
@@ -97,16 +118,16 @@
                     <div class="input-group" data-mode="width" style="display: none;"><input type="number" data-input="area" placeholder="Enter area" data-lang-key="rectangle.area_placeholder" /><input type="number" data-input="height" placeholder="Enter height" data-lang-key="rectangle.height_placeholder" /></div>
                     <div class="input-group" data-mode="height" style="display: none;"><input type="number" data-input="area" placeholder="Enter area" data-lang-key="rectangle.area_placeholder" /><input type="number" data-input="width" placeholder="Enter width" data-lang-key="rectangle.width_placeholder" /></div>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขสามเหลี่ยม -->
                 <section id="triangle" class="calculator-section" style="display: none;" data-calculator="triangle">
                     <h2 data-lang-key="triangle.title">Triangle Area Calculation</h2>
-                    <select data-input="operation" onchange="updateCalculatorInputs(this)">
+                    <select data-input="operation" data-action="update-inputs">
                         <option value="area" data-lang-key="triangle.op_find_area">Find Area</option>
                         <option value="height" data-lang-key="triangle.op_find_height">Find Height</option>
                         <option value="base" data-lang-key="triangle.op_find_base">Find Base</option>
@@ -115,10 +136,10 @@
                     <div class="input-group" data-mode="height" style="display: none;"><input type="number" data-input="area" placeholder="Enter area" data-lang-key="triangle.area_placeholder" /><input type="number" data-input="base" placeholder="Enter base length" data-lang-key="triangle.base_placeholder" /></div>
                     <div class="input-group" data-mode="base" style="display: none;"><input type="number" data-input="area" placeholder="Enter area" data-lang-key="triangle.area_placeholder" /><input type="number" data-input="height" placeholder="Enter height" data-lang-key="triangle.height_placeholder" /></div>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขห้าเหลี่ยมด้านเท่า -->
@@ -126,15 +147,15 @@
                     <h2 data-lang-key="pentagon.title">Regular Pentagon Area</h2>
                     <input type="number" data-input="side" placeholder="Enter side length" data-lang-key="pentagon.side_placeholder" />
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
-                    </div>                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                    </div>                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขเปอร์เซ็นต์ -->
                 <section id="percentage" class="calculator-section" style="display: none;" data-calculator="percentage">
                     <h2 data-lang-key="percentage.title">Percentage & Discount Calculator</h2>
-                    <select data-input="operation" onchange="updatePercentageInputs()">
+                    <select data-input="operation" data-action="update-percentage-inputs">
                         <option value="percent_of" data-lang-key="percentage.op_percent_of">Find X% of Y</option>
                         <option value="what_percent" data-lang-key="percentage.op_what_percent">X is what % of Y</option>
                         <option value="discount" data-lang-key="percentage.op_discount">Calculate Discount</option>
@@ -144,11 +165,11 @@
                     <input type="number" data-input="val2" placeholder="Y (Total value)" />
                     <br /><br />
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
-                    <p data-output="discount-summary" style="display:none;"><span data-lang-key="percentage.price_after_discount">Price after discount:</span> <span data-output="discounted-price"></span><button class="copy-btn" onclick="copyResult(this, 'discounted-price')">📋</button> | <span data-lang-key="percentage.you_saved">You saved:</span> <span data-output="saved-amount"></span><button class="copy-btn" onclick="copyResult(this, 'saved-amount')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
+                    <p data-output="discount-summary" style="display:none;"><span data-lang-key="percentage.price_after_discount">Price after discount:</span> <span data-output="discounted-price"></span><button class="copy-btn" data-action="copy" data-output-target="discounted-price">📋</button> | <span data-lang-key="percentage.you_saved">You saved:</span> <span data-output="saved-amount"></span><button class="copy-btn" data-action="copy" data-output-target="saved-amount">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลข BMI -->
@@ -158,43 +179,43 @@
                     <input type="number" data-input="height" placeholder="Height (cm)" data-lang-key="bmi.height_placeholder" />
                     <br /><br />
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="bmi.your_bmi">Your BMI:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
-                    <p><span data-lang-key="bmi.interpretation">Interpretation:</span> <span data-output="interpretation"></span><button class="copy-btn" onclick="copyResult(this, 'interpretation')">📋</button></p>
+                    <p><span data-lang-key="bmi.your_bmi">Your BMI:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
+                    <p><span data-lang-key="bmi.interpretation">Interpretation:</span> <span data-output="interpretation"></span><button class="copy-btn" data-action="copy" data-output-target="interpretation">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขปริมาตรลูกบาศก์ -->
                 <section id="cube" class="calculator-section" style="display: none;" data-calculator="cube">
                     <h2 data-lang-key="cube.title">Cube Volume</h2>
-                    <select data-input="operation" onchange="updateCalculatorInputs(this)">
+                    <select data-input="operation" data-action="update-inputs">
                         <option value="volume" data-lang-key="cube.op_find_volume">Find Volume</option>
                         <option value="side" data-lang-key="cube.op_find_side">Find Side (from volume)</option>
                     </select>
                     <div class="input-group" data-mode="volume"><input type="number" data-input="side" placeholder="Enter side length" data-lang-key="cube.side_placeholder" /></div>
                     <div class="input-group" data-mode="side" style="display: none;"><input type="number" data-input="volume" placeholder="Enter volume" data-lang-key="cube.volume_placeholder" /></div>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขปริมาตรทรงกลม -->
                 <section id="sphere" class="calculator-section" style="display: none;" data-calculator="sphere">
                     <h2 data-lang-key="sphere.title">Sphere Volume</h2>
-                    <select data-input="operation" onchange="updateCalculatorInputs(this)">
+                    <select data-input="operation" data-action="update-inputs">
                         <option value="volume" data-lang-key="sphere.op_find_volume">Find Volume</option>
                         <option value="radius" data-lang-key="sphere.op_find_radius">Find Radius (from volume)</option>
                     </select>
                     <div class="input-group" data-mode="volume"><input type="number" data-input="radius" placeholder="Enter radius (r)" data-lang-key="sphere.radius_placeholder" /></div>
                     <div class="input-group" data-mode="radius" style="display: none;"><input type="number" data-input="volume" placeholder="Enter volume" data-lang-key="sphere.volume_placeholder" /></div>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องคิดเลขปริมาตรทรงกระบอก -->
@@ -203,77 +224,234 @@
                     <input type="number" data-input="radius" placeholder="Enter radius (r)" data-lang-key="cylinder.radius_placeholder" />
                     <input type="number" data-input="height" placeholder="Enter height" data-lang-key="cylinder.height_placeholder" />
                     <div class="button-group">
-                        <button class="btn-primary" onclick="handleCalculation(this)" data-lang-key="common.calculate">Calculate</button>
-                        <button class="btn-secondary" onclick="clearInputs(this)" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
                     </div>
-                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" onclick="copyResult(this, 'result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
                 </section>
 
                 <!-- เครื่องมือแปลงหน่วยความยาว -->
                 <section id="length-converter" class="calculator-section" style="display: none;">
                     <h2 data-lang-key="converter.length_title">Length Unit Converter</h2>
-                    <input type="number" id="length-conv-input" placeholder="Enter value..." data-lang-key="common.enter_value" onkeyup="runConversion('length')">
-                    <select id="length-conv-from" onchange="runConversion('length')">
-                        <option value="mm">มิลลิเมตร (mm)</option>
-                        <option value="cm" selected>เซนติเมตร (cm)</option>
-                        <option value="m">เมตร (m)</option>
-                        <option value="km">กิโลเมตร (km)</option>
-                        <option value="in">นิ้ว (in)</option>
-                        <option value="ft">ฟุต (ft)</option>
-                        <option value="yd">หลา (yd)</option>
-                        <option value="mi">ไมล์ (mi)</option>
+                    <input type="number" id="length-conv-input" placeholder="Enter value..." data-lang-key="common.enter_value" data-action="convert" data-conv-type="length">
+                    <select id="length-conv-from" data-action="convert" data-conv-type="length">
+                        <option value="mm" data-lang-key="converter_units.mm">Millimeter (mm)</option>
+                        <option value="cm" selected data-lang-key="converter_units.cm">Centimeter (cm)</option>
+                        <option value="m" data-lang-key="converter_units.m">Meter (m)</option>
+                        <option value="km" data-lang-key="converter_units.km">Kilometer (km)</option>
+                        <option value="in" data-lang-key="converter_units.in">Inch (in)</option>
+                        <option value="ft" data-lang-key="converter_units.ft">Foot (ft)</option>
+                        <option value="yd" data-lang-key="converter_units.yd">Yard (yd)</option>
+                        <option value="mi" data-lang-key="converter_units.mi">Mile (mi)</option>
                     </select>
                     <span>→</span>
-                    <select id="length-conv-to" onchange="runConversion('length')">
-                        <option value="m" selected>เมตร (m)</option>
-                        <option value="mm">มิลลิเมตร (mm)</option>
-                        <option value="cm">เซนติเมตร (cm)</option>
-                        <option value="km">กิโลเมตร (km)</option>
-                        <option value="in">นิ้ว (in)</option>
-                        <option value="ft">ฟุต (ft)</option>
-                        <option value="yd">หลา (yd)</option>
-                        <option value="mi">ไมล์ (mi)</option>
+                    <select id="length-conv-to" data-action="convert" data-conv-type="length">
+                        <option value="m" selected data-lang-key="converter_units.m">Meter (m)</option>
+                        <option value="mm" data-lang-key="converter_units.mm">Millimeter (mm)</option>
+                        <option value="cm" data-lang-key="converter_units.cm">Centimeter (cm)</option>
+                        <option value="km" data-lang-key="converter_units.km">Kilometer (km)</option>
+                        <option value="in" data-lang-key="converter_units.in">Inch (in)</option>
+                        <option value="ft" data-lang-key="converter_units.ft">Foot (ft)</option>
+                        <option value="yd" data-lang-key="converter_units.yd">Yard (yd)</option>
+                        <option value="mi" data-lang-key="converter_units.mi">Mile (mi)</option>
                     </select>
-                    <p><span data-lang-key="common.result">Result:</span> <span id="length-conv-result"></span><button class="copy-btn" onclick="copyResult(this, 'length-conv-result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span id="length-conv-result"></span><button class="copy-btn" data-action="copy-conv" data-output-target="length-conv-result">📋</button></p>
                 </section>
 
                 <!-- เครื่องมือแปลงหน่วยพื้นที่ -->
                 <section id="area-converter" class="calculator-section" style="display: none;">
                     <h2 data-lang-key="converter.area_title">Area Unit Converter</h2>
-                    <input type="number" id="area-conv-input" placeholder="Enter value..." data-lang-key="common.enter_value" onkeyup="runConversion('area')">
-                    <select id="area-conv-from" onchange="runConversion('area')">
-                        <option value="sqm" selected>ตารางเมตร (m²)</option>
-                        <option value="sqkm">ตารางกิโลเมตร (km²)</option>
-                        <option value="sqft">ตารางฟุต (ft²)</option>
-                        <option value="acre">เอเคอร์ (acre)</option>
+                    <input type="number" id="area-conv-input" placeholder="Enter value..." data-lang-key="common.enter_value" data-action="convert" data-conv-type="area">
+                    <select id="area-conv-from" data-action="convert" data-conv-type="area">
+                        <option value="sqm" selected data-lang-key="converter_units.sqm">Square Meter (m²)</option>
+                        <option value="sqkm" data-lang-key="converter_units.sqkm">Square Kilometer (km²)</option>
+                        <option value="sqft" data-lang-key="converter_units.sqft">Square Foot (ft²)</option>
+                        <option value="acre" data-lang-key="converter_units.acre">Acre</option>
                     </select>
                     <span>→</span>
-                    <select id="area-conv-to" onchange="runConversion('area')">
-                        <option value="sqft" selected>ตารางฟุต (ft²)</option>
-                        <option value="sqm">ตารางเมตร (m²)</option>
-                        <option value="sqkm">ตารางกิโลเมตร (km²)</option>
-                        <option value="acre">เอเคอร์ (acre)</option>
+                    <select id="area-conv-to" data-action="convert" data-conv-type="area">
+                        <option value="sqft" selected data-lang-key="converter_units.sqft">Square Foot (ft²)</option>
+                        <option value="sqm" data-lang-key="converter_units.sqm">Square Meter (m²)</option>
+                        <option value="sqkm" data-lang-key="converter_units.sqkm">Square Kilometer (km²)</option>
+                        <option value="acre" data-lang-key="converter_units.acre">Acre</option>
                     </select>
-                    <p><span data-lang-key="common.result">Result:</span> <span id="area-conv-result"></span><button class="copy-btn" onclick="copyResult(this, 'area-conv-result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span id="area-conv-result"></span><button class="copy-btn" data-action="copy-conv" data-output-target="area-conv-result">📋</button></p>
                 </section>
 
                 <!-- เครื่องมือแปลงหน่วยปริมาตร -->
                 <section id="volume-converter" class="calculator-section" style="display: none;">
                     <h2 data-lang-key="converter.volume_title">Volume Unit Converter</h2>
-                    <input type="number" id="volume-conv-input" placeholder="Enter value..." data-lang-key="common.enter_value" onkeyup="runConversion('volume')">
-                    <select id="volume-conv-from" onchange="runConversion('volume')">
-                        <option value="ml" selected>มิลลิลิตร (ml)</option>
-                        <option value="l">ลิตร (l)</option>
-                        <option value="gal">แกลลอน (gal)</option>
+                    <input type="number" id="volume-conv-input" placeholder="Enter value..." data-lang-key="common.enter_value" data-action="convert" data-conv-type="volume">
+                    <select id="volume-conv-from" data-action="convert" data-conv-type="volume">
+                        <option value="ml" selected data-lang-key="converter_units.ml">Milliliter (ml)</option>
+                        <option value="l" data-lang-key="converter_units.l">Liter (l)</option>
+                        <option value="gal" data-lang-key="converter_units.gal">Gallon (gal)</option>
                     </select>
                     <span>→</span>
-                    <select id="volume-conv-to" onchange="runConversion('volume')">
-                        <option value="l" selected>ลิตร (l)</option>
-                        <option value="ml">มิลลิลิตร (ml)</option>
-                        <option value="gal">แกลลอน (gal)</option>
+                    <select id="volume-conv-to" data-action="convert" data-conv-type="volume">
+                        <option value="l" selected data-lang-key="converter_units.l">Liter (l)</option>
+                        <option value="ml" data-lang-key="converter_units.ml">Milliliter (ml)</option>
+                        <option value="gal" data-lang-key="converter_units.gal">Gallon (gal)</option>
                     </select>
-                    <p><span data-lang-key="common.result">Result:</span> <span id="volume-conv-result"></span><button class="copy-btn" onclick="copyResult(this, 'volume-conv-result')">📋</button></p>
+                    <p><span data-lang-key="common.result">Result:</span> <span id="volume-conv-result"></span><button class="copy-btn" data-action="copy-conv" data-output-target="volume-conv-result">📋</button></p>
                 </section>
+
+                <!-- เครื่องคำนวณดอกเบี้ย -->
+                <section id="interest-calculator" class="calculator-section" style="display: none;" data-calculator="interest">
+                    <h2 data-lang-key="interest.title">Interest Calculator</h2>
+                    <select data-input="operation" data-action="update-inputs">
+                        <option value="simple" data-lang-key="interest.op_simple">Simple Interest</option>
+                        <option value="compound" data-lang-key="interest.op_compound">Compound Interest</option>
+                    </select>
+                    <input type="number" data-input="principal" placeholder="Principal Amount" data-lang-key="interest.principal_placeholder" />
+                    <input type="number" data-input="rate" placeholder="Annual Interest Rate (%)" data-lang-key="interest.rate_placeholder" />
+                    <div class="input-group">
+                        <input type="number" data-input="time" placeholder="Time" data-lang-key="interest.time_placeholder" />
+                        <select data-input="time_unit">
+                            <option value="years" data-lang-key="common.years">Years</option>
+                            <option value="months" data-lang-key="common.months">Months</option>
+                        </select>
+                    </div>
+                    <div class="input-group" data-mode="compound" style="display: none;">
+                        <label data-lang-key="interest.compounding_frequency">Compounding Frequency:</label>
+                        <select data-input="compounding_frequency">
+                            <option value="1" data-lang-key="interest.freq_annually">Annually</option>
+                            <option value="2" data-lang-key="interest.freq_semiannually">Semi-Annually</option>
+                            <option value="4" data-lang-key="interest.freq_quarterly">Quarterly</option>
+                            <option value="12" data-lang-key="interest.freq_monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                    </div>
+                    <p><span data-lang-key="interest.total_interest">Total Interest:</span> <span data-output="total_interest"></span><button class="copy-btn" data-action="copy" data-output-target="total_interest">📋</button></p>
+                    <p><span data-lang-key="interest.total_amount">Total Amount:</span> <span data-output="total_amount"></span><button class="copy-btn" data-action="copy" data-output-target="total_amount">📋</button></p>
+                    
+                    <!-- พื้นที่สำหรับแสดงกราฟ -->
+                    <div class="chart-container" data-mode="compound" style="display: none; margin-top: 20px;">
+                        <canvas id="interest-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- เครื่องคำนวณสินเชื่อ -->
+                <section id="loan-calculator" class="calculator-section" style="display: none;" data-calculator="loan">
+                    <h2 data-lang-key="loan.title">Loan Calculator</h2>
+                    <input type="number" data-input="amount" placeholder="Loan Amount" data-lang-key="loan.amount_placeholder" />
+                    <input type="number" data-input="rate" placeholder="Annual Interest Rate (%)" data-lang-key="loan.rate_placeholder" />
+                    <input type="number" data-input="term" placeholder="Loan Term (years)" data-lang-key="loan.term_placeholder" />
+                    <div class="button-group">
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                    </div>
+                    <p><span data-lang-key="loan.monthly_payment">Monthly Payment:</span> <span data-output="monthly_payment"></span><button class="copy-btn" data-action="copy" data-output-target="monthly_payment">📋</button></p>
+                    <p><span data-lang-key="loan.total_payment">Total Payment:</span> <span data-output="total_payment"></span><button class="copy-btn" data-action="copy" data-output-target="total_payment">📋</button></p>
+                    <p><span data-lang-key="loan.total_interest">Total Interest:</span> <span data-output="total_interest"></span><button class="copy-btn" data-action="copy" data-output-target="total_interest">📋</button></p>
+                </section>
+
+                <!-- การเงินอื่นๆ -->
+                <section id="other-finance-calculator" class="calculator-section" style="display: none;" data-calculator="other-finance">
+                    <h2 data-lang-key="other_finance.title">Other Financial Tools</h2>
+                    <p data-lang-key="common.coming_soon">Coming soon...</p>
+                </section>
+
+                <!-- เครื่องคำนวณค่าเฉลี่ย -->
+                <section id="mean-calculator" class="calculator-section" style="display: none;" data-calculator="mean">
+                    <h2 data-lang-key="statistics.mean_title">Mean Calculator</h2>
+                    <div class="stats-inputs-container">
+                        <!-- Dynamic stat inputs will be generated here -->
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-secondary" data-action="add-stat-input" data-lang-key="statistics.add_number">Add Number</button>
+                    </div>
+                    <p><span data-lang-key="statistics.mean_result">Mean:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
+                </section>
+
+                <!-- เครื่องคำนวณมัธยฐาน -->
+                <section id="median-calculator" class="calculator-section" style="display: none;" data-calculator="median">
+                    <h2 data-lang-key="statistics.median_title">Median Calculator</h2>
+                    <div class="stats-inputs-container">
+                        <!-- Dynamic stat inputs will be generated here -->
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-secondary" data-action="add-stat-input" data-lang-key="statistics.add_number">Add Number</button>
+                    </div>
+                    <p><span data-lang-key="statistics.median_result">Median:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
+                </section>
+
+                <!-- เครื่องคำนวณฐานนิยม -->
+                <section id="mode-calculator" class="calculator-section" style="display: none;" data-calculator="mode">
+                    <h2 data-lang-key="statistics.mode_title">Mode Calculator</h2>
+                    <div class="stats-inputs-container">
+                        <!-- Dynamic stat inputs will be generated here -->
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-secondary" data-action="add-stat-input" data-lang-key="statistics.add_number">Add Number</button>
+                    </div>
+                    <p><span data-lang-key="statistics.mode_result">Mode:</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
+                </section>
+
+                <!-- เครื่องคำนวณค่าเบี่ยงเบนมาตรฐาน -->
+                <section id="std-dev-calculator" class="calculator-section" style="display: none;" data-calculator="standard-deviation">
+                    <h2 data-lang-key="statistics.std_dev_title">Standard Deviation Calculator</h2>
+                    <div class="stats-inputs-container">
+                        <!-- Dynamic stat inputs will be generated here -->
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" data-action="calculate" data-lang-key="common.calculate">Calculate</button>
+                        <button class="btn-secondary" data-action="clear" data-lang-key="common.clear">Clear</button>
+                        <button class="btn-secondary" data-action="add-stat-input" data-lang-key="statistics.add_number">Add Number</button>
+                    </div>
+                    <p><span data-lang-key="statistics.std_dev_result">Standard Deviation (σ):</span> <span data-output="result"></span><button class="copy-btn" data-action="copy" data-output-target="result">📋</button></p>
+                </section>
+
+                <!-- สถิติอื่นๆ -->
+                <section id="other-stats-calculator" class="calculator-section" style="display: none;" data-calculator="other-stats">
+                    <h2 data-lang-key="statistics.other_stats_title">Other Statistics Tools</h2>
+                    <p data-lang-key="common.coming_soon">Coming soon...</p>
+                </section>
+            </main>
+            <aside id="history-panel">
+                <h3 data-lang-key="common.history_title">History</h3>
+                <ul id="history-list">
+                    <!-- History items will be generated by JavaScript -->
+                </ul>
+                <div class="history-footer">
+                    <button id="clear-history-btn" class="btn-secondary" data-lang-key="common.clear_history">Clear History</button>
+                </div>
+            </aside>
+        </div>
+        <footer>
+            <p>&copy; 2025 Math Web. All rights reserved.</p>
+        </footer>
+
+        <!-- เพิ่ม Chart.js library -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="script.js"></script>
+</html>
+                    </select>
+                    ... inputs for principal, rate, time ...
+                    -->
+                </section>
+
+                <!-- เครื่องคำนวณสินเชื่อ -->
+                <section id="loan-calculator" class="calculator-section" style="display: none;" data-calculator="loan">
+                    <h2 data-lang-key="loan.title">Loan Calculator</h2>
+                    <p data-lang-key="common.coming_soon">Coming soon...</p>
+                </section>
+
+                <!-- การเงินอื่นๆ -->
+                <section id="other-finance-calculator" class="calculator-section" style="display: none;" data-calculator="other-finance">
+                    <h2 data-lang-key="other_finance.title">Other Financial Tools</h2>
+                    <p data-lang-key="common.coming_soon">Coming soon...</p>
+                </section>
+
             </main>
             <aside id="history-panel">
                 <h3 data-lang-key="common.history_title">History</h3>

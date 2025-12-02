@@ -1,2 +1,1 @@
-# New-project
-Bylat project
+Hello, this is my second project! My goal was to create a tool to streamline my work and studies. Due to a tight schedule, I leveraged AI to generate approximately 80% of the code. While I relied heavily on AI assistance, this project is designed to solve real problems and make life more efficient.

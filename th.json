@@ -18,19 +18,33 @@
         "pentagon": "- ห้าเหลี่ยม",
         "cube": "- ลูกบาศก์ (ปริมาตร)",
         "sphere": "- ทรงกลม (ปริมาตร)",
-        "cylinder": "- ทรงกระบอก (ปริมาตร)"
+        "cylinder": "- ทรงกระบอก (ปริมาตร)",
+        "finance": "การเงิน",
+        "interest": "- คำนวณดอกเบี้ย",
+        "loan": "- สินเชื่อ",
+        "other_finance": "- อื่นๆ",
+        "statistics": "สถิติ",
+        "mean": "- ค่าเฉลี่ย (Mean)",
+        "median": "- มัธยฐาน",
+        "mode": "- ฐานนิยม",
+        "other_stats": "- อื่นๆ",
+        "std_dev": "- ค่าเบี่ยงเบนมาตรฐาน"
     },
     "common": {
         "calculate": "คำนวณ",
         "clear": "ล้างค่า",
         "result": "ผลลัพธ์:",
         "enter_value": "ใส่ค่า...",
-        "error_nan": "กรุณาใส่ตัวเลขให้ครบทั้งสองช่อง",
+        "error_nan": "กรุณาใส่ตัวเลขให้ครบทุกช่องที่จำเป็น",
         "error_nan_single": "กรุณาใส่ตัวเลขให้ถูกต้อง",
         "error_divide_by_zero": "ไม่สามารถหารด้วยศูนย์ได้",
         "copied": "คัดลอกแล้ว!",
         "history_title": "ประวัติการคำนวณ",
-        "clear_history": "ล้างประวัติ"
+        "clear_history": "ล้างประวัติ",
+        "years": "ปี",
+        "year_prefix": "ปีที่",
+        "months": "เดือน",
+        "coming_soon": "เร็วๆ นี้..."
     },
     "profile": {
         "title": "ประวัติส่วนตัว",
@@ -138,5 +152,66 @@
         "length_title": "แปลงหน่วยความยาว",
         "area_title": "แปลงหน่วยพื้นที่",
         "volume_title": "แปลงหน่วยปริมาตร"
+    },
+    "converter_units": {
+        "mm": "มิลลิเมตร (mm)",
+        "cm": "เซนติเมตร (cm)",
+        "m": "เมตร (m)",
+        "km": "กิโลเมตร (km)",
+        "in": "นิ้ว (in)",
+        "ft": "ฟุต (ft)",
+        "yd": "หลา (yd)",
+        "mi": "ไมล์ (mi)",
+        "sqm": "ตารางเมตร (m²)",
+        "sqkm": "ตารางกิโลเมตร (km²)",
+        "sqft": "ตารางฟุต (ft²)",
+        "acre": "เอเคอร์",
+        "ml": "มิลลิลิตร (ml)",
+        "l": "ลิตร (l)",
+        "gal": "แกลลอน (gal)"
+    },
+    "interest": {
+        "title": "คำนวณดอกเบี้ย",
+        "op_simple": "ดอกเบี้ยอย่างง่าย",
+        "op_compound": "ดอกเบี้ยทบต้น",
+        "principal_placeholder": "เงินต้น",
+        "rate_placeholder": "อัตราดอกเบี้ยต่อปี (%)",
+        "time_placeholder": "ระยะเวลา",
+        "total_interest": "ดอกเบี้ยทั้งหมด:",
+        "total_amount": "ยอดเงินรวม:",
+        "total_amount_label": "ยอดเงินรวม",
+        "compounding_frequency": "ความถี่ในการทบต้น:",
+        "freq_annually": "รายปี",
+        "freq_semiannually": "ราย 6 เดือน",
+        "freq_quarterly": "รายไตรมาส (3 เดือน)",
+        "freq_monthly": "รายเดือน"
+    },
+    "loan": {
+        "title": "คำนวณสินเชื่อ",
+        "amount_placeholder": "ยอดสินเชื่อ",
+        "rate_placeholder": "อัตราดอกเบี้ยต่อปี (%)",
+        "term_placeholder": "ระยะเวลาผ่อน (ปี)",
+        "monthly_payment": "ค่างวดต่อเดือน:",
+        "total_payment": "ยอดชำระทั้งหมด:",
+        "total_interest": "ดอกเบี้ยทั้งหมด:"
+    },
+    "other_finance": {
+        "title": "เครื่องมือการเงินอื่นๆ"
+    },
+    "statistics": {
+        "mean_title": "เครื่องคำนวณค่าเฉลี่ย (Mean)",
+        "median_title": "เครื่องคำนวณมัธยฐาน",
+        "mode_title": "เครื่องคำนวณฐานนิยม",
+        "std_dev_title": "เครื่องคำนวณค่าเบี่ยงเบนมาตรฐาน",
+        "other_stats_title": "เครื่องมือสถิติอื่นๆ",
+        "add_number": "เพิ่มตัวเลข",
+        "number_placeholder": "ใส่ตัวเลข",
+        "mean_result": "ค่าเฉลี่ย:",
+        "median_result": "มัธยฐาน:",
+        "mode_result": "ฐานนิยม:",
+        "std_dev_result": "ค่าเบี่ยงเบนมาตรฐาน (σ):",
+        "no_mode_found": "ไม่พบฐานนิยม",
+        "error_no_numbers": "กรุณาใส่ตัวเลขอย่างน้อยหนึ่งตัว",
+        "error_at_least_two": "กรุณาใส่ตัวเลขอย่างน้อยสองตัว"
     }
 }
