@@ -1,0 +1,376 @@
+/* --- ตัวแปรสีและฟอนต์ --- */
+:root {
+    --primary-color: #3a7bfd;
+    --secondary-color: #7e57c2;
+    --background-color: #f4f7f9;
+    --surface-color: #ffffff;
+    --text-color: #2c3e50;
+    --text-secondary-color: #7f8c8d;
+    --border-color: #e0e6ed;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    --font-family: 'Poppins', sans-serif;
+}
+
+body.dark-mode {
+    --primary-color: #4585fc;
+    --secondary-color: #9575cd;
+    --background-color: #1a1d24;
+    --surface-color: #252932;
+    --text-color: #e2e8f0;
+    --text-secondary-color: #94a3b8;
+    --border-color: #3c4251;
+}
+
+/* --- สไตล์พื้นฐาน --- */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- Layout หลัก --- */
+.container {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    gap: 25px;
+    padding: 20px;
+    align-items: flex-start;
+}
+
+header {
+    background-color: var(--surface-color);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: var(--text-secondary-color);
+}
+
+main, nav, aside {
+    background-color: var(--surface-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+/* --- Navigation Menu --- */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-secondary-color);
+    transition: background-color 0.2s, color 0.2s;
+    border: none; /* Reset default button border */
+    background: none; /* Reset default button background */
+    cursor: pointer; /* Ensure cursor is a pointer */
+}
+
+.nav-button.active, .nav-button:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.nav-button.has-submenu.active {
+     background-color: #e8f0fe;
+     color: var(--primary-color);
+}
+body.dark-mode .nav-button.has-submenu.active {
+    background-color: rgba(69, 133, 252, 0.15);
+}
+
+.submenu {
+    display: none; /* Hidden by default */
+}
+
+.submenu .nav-button {
+    padding-left: 30px;
+    font-size: 0.9em;
+    color: var(--text-secondary-color);
+}
+
+.submenu .nav-button.active {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+/* --- Calculator Section --- */
+.calculator-section {
+    padding: 25px;
+    border: none;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.calculator-section h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+/* --- ฟอร์มและปุ่ม --- */
+input[type="number"], select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 1em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="number"]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(58, 123, 253, 0.2);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn-primary:hover { filter: brightness(110%); }
+.btn-secondary:hover { background-color: var(--background-color); }
+
+.btn-primary:active, .btn-secondary:active {
+    transform: translateY(1px);
+}
+
+/* --- Dynamic Input Rows (Stats & Basic) --- */
+.stats-inputs-container, #basic-inputs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stat-input-row, .basic-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.stat-input-row input, .basic-input-row input {
+    margin-bottom: 0; /* Override default margin */
+}
+
+.btn-remove-row {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.4em;
+    line-height: 0;
+    transition: all 0.2s;
+}
+
+.btn-remove-row:hover {
+    background-color: var(--error-color);
+    color: #fff;
+    border-color: var(--error-color);
+}
+
+/* --- Result Display --- */
+.calculator-section p {
+    margin-top: 20px;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.calculator-section p > span[data-output] {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-left: 8px;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 10px;
+    color: var(--text-secondary-color);
+    transition: color 0.2s;
+}
+
+.copy-btn:hover {
+    color: var(--primary-color);
+}
+
+/* --- Header Controls (Language and Dark Mode) --- */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.lang-btn {
+    background-color: var(--background-color);
+    color: var(--text-secondary-color);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.lang-btn.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+#dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary-color);
+}
+
+/* --- History Panel --- */
+#history-panel {
+    background-color: var(--section-bg-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    padding: 20px;
+    max-height: 80vh; /* Limit height and allow scrolling */
+    display: flex;
+    flex-direction: column;
+}
+
+#history-panel h3 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--border-color);
+}
+
+#history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto; /* Enable scrolling for history items */
+}
+
+.history-item {
+    padding: 12px 5px;
+    border-bottom: 1px solid var(--subtle-border-color);
+    font-size: 0.9rem;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item .expression {
+    color: var(--text-color);
+    display: block;
+    word-wrap: break-word;
+}
+
+.history-item .result {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.history-footer {
+    margin-top: 20px;
+}
+
+/* --- Responsive Design for Smaller Screens --- */
+@media (max-width: 1200px) {
+    .container {
+        grid-template-columns: 260px 1fr; /* Nav | Main */
+    }
+    #history-panel {
+        grid-column: 1 / -1; /* Span across all columns */
+        max-height: 300px; /* Adjust height for horizontal layout */
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+}

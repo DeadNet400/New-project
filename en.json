@@ -1,0 +1,217 @@
+{
+    "header": {
+        "title": "Math Formula Calculator"
+    },
+    "nav": {
+        "basic": "Basic",
+        "profile": "My Profile",
+        "percentage": "Percentage",
+        "bmi": "Body Mass Index (BMI)",
+        "unit_conversion": "Unit Conversion",
+        "length": "- Length",
+        "area": "- Area",
+        "volume": "- Volume",
+        "geometry": "Geometry",
+        "circle": "- Circle",
+        "rectangle": "- Rectangle",
+        "triangle": "- Triangle",
+        "pentagon": "- Pentagon",
+        "cube": "- Cube (Volume)",
+        "sphere": "- Sphere (Volume)",
+        "cylinder": "- Cylinder (Volume)",
+        "finance": "Finance",
+        "interest": "- Interest",
+        "loan": "- Loan",
+        "other_finance": "- Others",
+        "statistics": "Statistics",
+        "mean": "- Mean",
+        "median": "- Median",
+        "mode": "- Mode",
+        "other_stats": "- Others",
+        "std_dev": "- Standard Deviation"
+    },
+    "common": {
+        "calculate": "Calculate",
+        "clear": "Clear",
+        "result": "Result:",
+        "enter_value": "Enter value...",
+        "error_nan": "Please enter valid numbers in all required fields.",
+        "error_nan_single": "Please enter a valid number.",
+        "error_divide_by_zero": "Cannot divide by zero.",
+        "copied": "Copied!",
+        "history_title": "History",
+        "clear_history": "Clear History",
+        "years": "Years",
+        "year_prefix": "Year",
+        "months": "Months",
+        "coming_soon": "Coming soon..."
+    },
+    "profile": {
+        "title": "My Profile",
+        "back_to_calculator": "Back to Calculator",
+        "name": "Your Name"
+    },
+    "basic_arithmetic": {
+        "title": "Basic Arithmetic",
+        "num1_placeholder": "Enter first number",
+        "num2_placeholder": "Enter second number",
+        "add_number": "Add Number"
+    },
+    "circle": {
+        "title": "Circle Calculations",
+        "op_find_area": "Find Area (from radius)",
+        "op_find_circumference": "Find Circumference (from radius)",
+        "op_find_diameter": "Find Diameter (from radius)",
+        "op_find_radius_from_area": "Find Radius (from area)",
+        "op_find_radius_from_circumference": "Find Radius (from circumference)",
+        "radius_placeholder": "Enter radius (r)",
+        "area_placeholder": "Enter area",
+        "circumference_placeholder": "Enter circumference",
+        "error_radius": "Please enter a valid radius.",
+        "error_area": "Please enter a valid area.",
+        "error_circumference": "Please enter a valid circumference."
+    },
+    "rectangle": {
+        "title": "Rectangle Calculations",
+        "op_find_area": "Find Area",
+        "op_find_perimeter": "Find Perimeter",
+        "op_find_width": "Find Width (from area)",
+        "op_find_height": "Find Height (from area)",
+        "width_placeholder": "Enter width",
+        "height_placeholder": "Enter height",
+        "area_placeholder": "Enter area",
+        "error_size": "Please enter width and height."
+    },
+    "triangle": {
+        "title": "Triangle Area Calculation",
+        "op_find_area": "Find Area",
+        "op_find_height": "Find Height",
+        "op_find_base": "Find Base",
+        "base_placeholder": "Enter base length",
+        "height_placeholder": "Enter height",
+        "area_placeholder": "Enter area",
+        "error_size": "Please enter base and height."
+    },
+    "pentagon": {
+        "title": "Regular Pentagon Area",
+        "side_placeholder": "Enter side length",
+        "error_side": "Please enter a valid side length."
+    },
+    "cube": {
+        "title": "Cube Volume",
+        "op_find_volume": "Find Volume",
+        "op_find_side": "Find Side (from volume)",
+        "side_placeholder": "Enter side length",
+        "volume_placeholder": "Enter volume",
+        "error_side": "Please enter a valid side length.",
+        "error_volume": "Please enter a valid volume."
+    },
+    "sphere": {
+        "title": "Sphere Volume",
+        "op_find_volume": "Find Volume",
+        "op_find_radius": "Find Radius (from volume)",
+        "radius_placeholder": "Enter radius (r)",
+        "volume_placeholder": "Enter volume",
+        "error_radius": "Please enter a valid radius.",
+        "error_volume": "Please enter a valid volume."
+    },
+    "cylinder": {
+        "title": "Cylinder Volume",
+        "radius_placeholder": "Enter radius (r)",
+        "height_placeholder": "Enter height",
+        "error_size": "Please enter radius and height."
+    },
+    "percentage": {
+        "title": "Percentage & Discount Calculator",
+        "op_percent_of": "Find X% of Y",
+        "op_what_percent": "X is what % of Y",
+        "op_discount": "Calculate Discount",
+        "placeholder_x_percent": "X (%)",
+        "placeholder_y_total": "Y (Total value)",
+        "placeholder_x_part": "X (Part)",
+        "placeholder_full_price": "Full Price",
+        "placeholder_discount_percent": "Discount (%)",
+        "result_discount": "Discount {val2}%",
+        "price_after_discount": "Price after discount:",
+        "you_saved": "You saved:"
+    },
+    "bmi": {
+        "title": "Body Mass Index (BMI) Calculator",
+        "weight_placeholder": "Weight (kg)",
+        "height_placeholder": "Height (cm)",
+        "your_bmi": "Your BMI:",
+        "interpretation": "Interpretation:",
+        "error_wh": "Please enter a valid weight and height.",
+        "interp_underweight": "Underweight",
+        "interp_normal": "Normal weight",
+        "interp_overweight": "Overweight",
+        "interp_obese1": "Obesity Class I",
+        "interp_obese2": "Obesity Class II (Severe)"
+    },
+    "converter": {
+        "length_title": "Length Unit Converter",
+        "area_title": "Area Unit Converter",
+        "volume_title": "Volume Unit Converter"
+    },
+    "converter_units": {
+        "mm": "Millimeter (mm)",
+        "cm": "Centimeter (cm)",
+        "m": "Meter (m)",
+        "km": "Kilometer (km)",
+        "in": "Inch (in)",
+        "ft": "Foot (ft)",
+        "yd": "Yard (yd)",
+        "mi": "Mile (mi)",
+        "sqm": "Square Meter (m²)",
+        "sqkm": "Square Kilometer (km²)",
+        "sqft": "Square Foot (ft²)",
+        "acre": "Acre",
+        "ml": "Milliliter (ml)",
+        "l": "Liter (l)",
+        "gal": "Gallon (gal)"
+    },
+    "interest": {
+        "title": "Interest Calculator",
+        "op_simple": "Simple Interest",
+        "op_compound": "Compound Interest",
+        "principal_placeholder": "Principal Amount",
+        "rate_placeholder": "Annual Interest Rate (%)",
+        "time_placeholder": "Time",
+        "total_interest": "Total Interest:",
+        "total_amount": "Total Amount:",
+        "total_amount_label": "Total Amount",
+        "compounding_frequency": "Compounding Frequency:",
+        "freq_annually": "Annually",
+        "freq_semiannually": "Semi-Annually",
+        "freq_quarterly": "Quarterly",
+        "freq_monthly": "Monthly"
+    },
+    "loan": {
+        "title": "Loan Calculator",
+        "amount_placeholder": "Loan Amount",
+        "rate_placeholder": "Annual Interest Rate (%)",
+        "term_placeholder": "Loan Term (years)",
+        "monthly_payment": "Monthly Payment:",
+        "total_payment": "Total Payment:",
+        "total_interest": "Total Interest:"
+    },
+    "other_finance": {
+        "title": "Other Financial Tools"
+    },
+    "statistics": {
+        "mean_title": "Mean (Average) Calculator",
+        "median_title": "Median Calculator",
+        "mode_title": "Mode Calculator",
+        "std_dev_title": "Standard Deviation Calculator",
+        "other_stats_title": "Other Statistics Tools",
+        "add_number": "Add Number",
+        "number_placeholder": "Enter a number",
+        "mean_result": "Mean:",
+        "median_result": "Median:",
+        "mode_result": "Mode:",
+        "std_dev_result": "Standard Deviation (σ):",
+        "no_mode_found": "No mode found",
+        "error_no_numbers": "Please enter at least one number.",
+        "error_at_least_two": "Please enter at least two numbers."
+    }
+}

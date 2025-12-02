@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Profile</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <header>
+            <h1 data-lang-key="profile.title">My Profile</h1>
+            <div class="header-controls">
+                <a href="index.html" class="nav-button" data-lang-key="profile.back_to_calculator">Back to Calculator</a>
+                <div class="lang-switcher">
+                    <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                    <button onclick="switchLanguage('th')" class="lang-btn">TH</button>
+                </div>
+                <button id="dark-mode-toggle" class="dark-mode-btn">🌙</button>
+            </div>
+        </header>
+        <div class="container profile-page">
+            <main>
+                <section class="calculator-section">
+                    <div class="profile-card">
+                        <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-pic" />
+                        <h2 data-lang-key="profile.name">Your Name</h2>
+                        <p>Web Developer & Math Enthusiast</p>
+                        <hr />
+                        <p>This is a personal profile page created as part of the Math Web project. You can add more details about yourself here, such as your skills, projects, or contact information.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+        <footer>
+            <p>&copy; 2025 Math Web. All rights reserved.</p>
+        </footer>
+
+        <script src="script.js"></script>
+    </body>
+</html>
