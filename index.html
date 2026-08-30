@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta id="themeColorMeta" name="theme-color" content="#f6f7fb" />
+  <title>Dayflow — Daily Routine Planner</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Thai', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            soft: '0 12px 40px rgba(15, 23, 42, .08)',
+            float: '0 18px 50px rgba(15, 23, 42, .14)'
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --hour-height: 64px;
+      --day-start: 6;
+      --day-end: 24;
+      --sidebar-width: 86px;
+      --page: #f6f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      background:
+        radial-gradient(circle at 12% -10%, rgba(99,102,241,.08), transparent 28rem),
+        radial-gradient(circle at 90% 5%, rgba(16,185,129,.07), transparent 24rem),
+        var(--page);
+      color: var(--text);
+      transition: background-color .25s ease, color .25s ease;
+    }
+    button, input, textarea, select { outline: none; }
+    button { transition: background-color .16s ease, border-color .16s ease, color .16s ease, transform .12s ease; }
+    button:active { transform: scale(.98); }
+
+    .routine-hero {
+      position: relative;
+      overflow: hidden;
+    }
+    .routine-hero::after {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -110px;
+      top: -150px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(99,102,241,.12), rgba(99,102,241,0) 70%);
+      pointer-events: none;
+    }
+    .progress-track { background: rgba(148,163,184,.18); }
+    .progress-fill {
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #10b981);
+      box-shadow: 0 0 18px rgba(99,102,241,.18);
+      transition: width .35s ease;
+    }
+    .glass-chip { background: rgba(255,255,255,.72); backdrop-filter: blur(12px); }
+
+    .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) repeat(var(--days-count), minmax(160px, 1fr));
+      min-width: calc(var(--sidebar-width) + var(--days-count) * 160px);
+    }
+
+    .time-grid-bg {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--hour-height) - 1px),
+        #e2e8f0 calc(var(--hour-height) - 1px),
+        #e2e8f0 var(--hour-height)
+      );
+    }
+
+    .quarter-grid-bg {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--hour-height) / 4 - 1px),
+        rgba(226,232,240,.45) calc(var(--hour-height) / 4 - 1px),
+        rgba(226,232,240,.45) calc(var(--hour-height) / 4)
+      );
+    }
+
+    .event-card {
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      border-radius: 12px;
+      padding: 7px 9px;
+      font-size: 12px;
+      line-height: 1.25;
+      user-select: none;
+      cursor: grab;
+      overflow: hidden;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      z-index: 10;
+      touch-action: none;
+    }
+    .event-card:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15,23,42,.12); }
+    .event-card.dragging, .event-card.resizing { cursor: grabbing; opacity: .82; z-index: 40; }
+    .resize-handle {
+      position: absolute;
+      left: 22%; right: 22%; bottom: 2px; height: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      cursor: ns-resize;
+      touch-action: none;
+    }
+
+    .now-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: #ef4444;
+      z-index: 25;
+      pointer-events: none;
+    }
+    .now-line::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: -4px;
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      background: #ef4444;
+    }
+
+    .modal-backdrop { backdrop-filter: blur(8px); }
+    .fade-in { animation: fadeIn .16s ease both; }
+    .slide-up { animation: slideUp .22s ease both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
+
+    html.dark {
+      color-scheme: dark;
+      --page: #090b10;
+      --surface: #11141b;
+      --surface-soft: #171b24;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --line: #252b36;
+    }
+    html.dark body {
+      background:
+        radial-gradient(circle at 10% -10%, rgba(99,102,241,.12), transparent 28rem),
+        radial-gradient(circle at 90% 0%, rgba(16,185,129,.07), transparent 24rem),
+        #090b10;
+      color: #f1f5f9;
+    }
+    html.dark .bg-white { background-color: #11141b !important; }
+    html.dark .bg-white\/90 { background-color: rgba(17,20,27,.9) !important; }
+    html.dark .bg-white\/95 { background-color: rgba(17,20,27,.95) !important; }
+    html.dark .bg-white\/60 { background-color: rgba(17,20,27,.72) !important; }
+    html.dark .bg-slate-50 { background-color: #171b24 !important; }
+    html.dark .bg-slate-100 { background-color: #1d222d !important; }
+    html.dark .bg-slate-900 { background-color: #080a0f !important; }
+    html.dark .bg-slate-800 { background-color: #1b202a !important; }
+    html.dark .border-slate-100 { border-color: #202631 !important; }
+    html.dark .border-slate-200 { border-color: #29303c !important; }
+    html.dark .border-slate-300 { border-color: #343c49 !important; }
+    html.dark .text-slate-900 { color: #f8fafc !important; }
+    html.dark .text-slate-800 { color: #e2e8f0 !important; }
+    html.dark .text-slate-700 { color: #cbd5e1 !important; }
+    html.dark .text-slate-600 { color: #b0bac8 !important; }
+    html.dark .text-slate-500 { color: #94a3b8 !important; }
+    html.dark .text-slate-400 { color: #7f8b9d !important; }
+    html.dark input, html.dark textarea, html.dark select {
+      color: #f8fafc;
+      border-color: #303745 !important;
+      background-color: #171b24 !important;
+    }
+    html.dark input::placeholder, html.dark textarea::placeholder { color: #64748b; }
+    html.dark .time-grid-bg {
+      background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--hour-height) - 1px), #2a303b calc(var(--hour-height) - 1px), #2a303b var(--hour-height));
+    }
+    html.dark .quarter-grid-bg {
+      background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--hour-height) / 4 - 1px), rgba(57,65,80,.45) calc(var(--hour-height) / 4 - 1px), rgba(57,65,80,.45) calc(var(--hour-height) / 4));
+    }
+    html.dark .scrollbar-thin::-webkit-scrollbar-thumb { background: #3b4351; }
+    html.dark .event-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,.36); }
+    html.dark .modal-backdrop { background: rgba(0,0,0,.68) !important; }
+    html.dark .bg-rose-50 { background-color: rgba(244,63,94,.12) !important; }
+    html.dark .bg-emerald-50 { background-color: rgba(16,185,129,.12) !important; }
+    html.dark .bg-sky-50 { background-color: rgba(14,165,233,.12) !important; }
+    html.dark .bg-blue-50 { background-color: rgba(59,130,246,.12) !important; }
+    html.dark .bg-amber-50 { background-color: rgba(245,158,11,.12) !important; }
+    html.dark .bg-rose-100 { background-color: rgba(244,63,94,.20) !important; }
+    html.dark .bg-blue-100 { background-color: rgba(59,130,246,.20) !important; }
+    html.dark .bg-amber-100 { background-color: rgba(245,158,11,.20) !important; }
+    html.dark .bg-emerald-100 { background-color: rgba(16,185,129,.20) !important; }
+    html.dark .bg-violet-100 { background-color: rgba(139,92,246,.20) !important; }
+    html.dark .text-rose-900 { color: #fecdd3 !important; }
+    html.dark .text-blue-900 { color: #bfdbfe !important; }
+    html.dark .text-amber-900 { color: #fde68a !important; }
+    html.dark .text-emerald-900 { color: #a7f3d0 !important; }
+    html.dark .text-violet-900 { color: #ddd6fe !important; }
+    html.dark .routine-hero::after { background: radial-gradient(circle, rgba(139,92,246,.16), rgba(139,92,246,0) 70%); }
+    html.dark .glass-chip { background: rgba(23,27,36,.78); }
+
+    @media (max-width: 768px) {
+      :root { --hour-height: 58px; --sidebar-width: 64px; }
+      .calendar-grid { grid-template-columns: var(--sidebar-width) repeat(var(--days-count), minmax(132px, 1fr)); }
+      .event-card { left: 3px; right: 3px; padding: 6px 7px; border-radius: 10px; }
+    }
+  </style>
+</head>
+<body class="text-slate-900 antialiased">
+  <div id="app" class="min-h-screen">
+    <!-- Top bar -->
+    <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-[1800px] items-center gap-3 px-3 py-3 md:px-5">
+        <div class="flex min-w-0 items-center gap-3">
+          <div class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-emerald-500 text-white shadow-soft">
+            <i data-lucide="sunrise" class="h-5 w-5"></i>
+          </div>
+          <div class="hidden sm:block">
+            <div class="font-bold tracking-tight">Dayflow</div>
+            <div class="text-xs text-slate-500" data-i18n="tagline">Build a better rhythm</div>
+          </div>
+        </div>
+
+        <div class="ml-auto flex items-center gap-2">
+          <button id="todayBtn" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm hover:bg-slate-50"> <span data-i18n="today">วันนี้</span></button>
+          <div class="flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <button data-view="day" class="view-btn rounded-lg px-3 py-1.5 text-xs font-semibold"> <span data-i18n="day">วัน</span></button>
+            <button data-view="week" class="view-btn rounded-lg px-3 py-1.5 text-xs font-semibold"> <span data-i18n="week">สัปดาห์</span></button>
+          </div>
+          <div id="themeControl" class="relative">
+            <button id="themeBtn" type="button" aria-haspopup="menu" aria-expanded="false" class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+              <i data-lucide="palette" class="h-4 w-4"></i>
+              <span id="themeBtnLabel">ธีม</span>
+              <i data-lucide="chevron-down" class="h-3.5 w-3.5 text-slate-400"></i>
+            </button>
+            <div id="themeMenu" role="menu" aria-label="เลือกธีม" class="absolute right-0 top-full z-50 mt-2 hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-float">
+              <button type="button" data-theme-option="light" role="menuitemradio" aria-checked="false" class="theme-option flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i data-lucide="sun" class="h-4 w-4"></i><span class="flex-1">สว่าง</span><i data-theme-check="light" data-lucide="check" class="hidden h-4 w-4"></i>
+              </button>
+              <button type="button" data-theme-option="dark" role="menuitemradio" aria-checked="false" class="theme-option flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i data-lucide="moon" class="h-4 w-4"></i><span class="flex-1">Black</span><i data-theme-check="dark" data-lucide="check" class="hidden h-4 w-4"></i>
+              </button>
+              <button type="button" data-theme-option="system" role="menuitemradio" aria-checked="false" class="theme-option flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <i data-lucide="monitor" class="h-4 w-4"></i><span class="flex-1">ตามระบบ</span><i data-theme-check="system" data-lucide="check" class="hidden h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+          <div id="languageControl" class="relative">
+            <button id="languageBtn" type="button" aria-haspopup="menu" aria-expanded="false" class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+              <i data-lucide="languages" class="h-4 w-4"></i>
+              <span id="languageBtnLabel">ไทย</span>
+              <i data-lucide="chevron-down" class="h-3.5 w-3.5 text-slate-400"></i>
+            </button>
+            <div id="languageMenu" role="menu" aria-label="เลือกภาษา" class="absolute right-0 top-full z-50 mt-2 hidden w-44 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-float">
+              <button type="button" data-language-option="th" role="menuitemradio" aria-checked="false" class="language-option flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <span class="text-base">🇹🇭</span><span class="flex-1">ไทย</span><i data-language-check="th" data-lucide="check" class="hidden h-4 w-4"></i>
+              </button>
+              <button type="button" data-language-option="en" role="menuitemradio" aria-checked="false" class="language-option flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <span class="text-base">🇬🇧</span><span class="flex-1">English</span><i data-language-check="en" data-lucide="check" class="hidden h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+          <button id="emergencyBtn" class="inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-100">
+            <i data-lucide="heart-pulse" class="h-4 w-4"></i><span class="hidden md:inline" data-i18n="sickDay">Sick Day</span>
+          </button>
+          <button id="addBtn" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800">
+            <i data-lucide="plus" class="h-4 w-4"></i><span class="hidden sm:inline" data-i18n="addRoutine">เพิ่มกิจวัตร</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-[1800px] px-3 py-4 md:px-5 md:py-5">
+      <!-- Overview -->
+      <section class="mb-4 grid gap-3 lg:grid-cols-[1fr_auto]">
+        <div class="routine-hero rounded-3xl border border-slate-200 bg-white p-4 shadow-soft md:p-5">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div class="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-slate-400">
+                <span id="modeDot" class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <span id="modeLabel">Active Day</span>
+              </div>
+              <h1 id="dateTitle" class="text-2xl font-bold tracking-tight md:text-3xl"></h1>
+              <p id="dateSubtitle" class="mt-1 text-sm text-slate-500"></p>
+              <div class="mt-4 max-w-xl">
+                <div class="mb-2 flex items-center justify-between gap-3 text-xs">
+                  <span class="font-semibold text-slate-600" data-i18n="dailyProgress">Daily progress</span>
+                  <span id="progressText" class="glass-chip rounded-full border border-slate-200 px-2.5 py-1 font-bold text-slate-700">0%</span>
+                </div>
+                <div class="progress-track h-2 overflow-hidden rounded-full">
+                  <div id="progressFill" class="progress-fill h-full rounded-full" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1 rounded-2xl bg-slate-100 p-1">
+              <button id="prevBtn" class="grid h-9 w-9 place-items-center rounded-xl hover:bg-white hover:shadow-sm"><i data-lucide="chevron-left" class="h-4 w-4"></i></button>
+              <button id="nextBtn" class="grid h-9 w-9 place-items-center rounded-xl hover:bg-white hover:shadow-sm"><i data-lucide="chevron-right" class="h-4 w-4"></i></button>
+            </div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div class="rounded-2xl bg-slate-50 p-3">
+              <div class="text-xs text-slate-500" data-i18n="routinesToday">กิจวัตรวันนี้</div>
+              <div id="statTotal" class="mt-1 text-xl font-bold">0</div>
+            </div>
+            <div class="rounded-2xl bg-emerald-50 p-3">
+              <div class="text-xs text-emerald-700" data-i18n="done">สำเร็จ</div>
+              <div id="statDone" class="mt-1 text-xl font-bold text-emerald-800">0</div>
+            </div>
+            <div class="rounded-2xl bg-rose-50 p-3">
+              <div class="text-xs text-rose-700" data-i18n="missed">พลาด</div>
+              <div id="statMissed" class="mt-1 text-xl font-bold text-rose-800">0</div>
+            </div>
+            <div class="rounded-2xl bg-sky-50 p-3">
+              <div class="text-xs text-sky-700" data-i18n="freeTime">Free Time</div>
+              <div id="statFree" class="mt-1 text-xl font-bold text-sky-800">0 ชม.</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="grid min-w-[300px] gap-3 sm:grid-cols-2 lg:w-[380px] lg:grid-cols-1">
+          <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-soft">
+            <div class="mb-3 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-bold" data-i18n="eisenhower">Eisenhower Matrix</div>
+                <div class="text-xs text-slate-500" data-i18n="routineColors">สีของกิจวัตร</div>
+              </div>
+              <i data-lucide="layout-grid" class="h-4 w-4 text-slate-400"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+              <div class="rounded-xl bg-rose-50 px-3 py-2 text-rose-700"><span class="mr-1 inline-block h-2 w-2 rounded-full bg-rose-500"></span><span data-i18n="catUrgentImportant">ด่วน + สำคัญ</span></div>
+              <div class="rounded-xl bg-blue-50 px-3 py-2 text-blue-700"><span class="mr-1 inline-block h-2 w-2 rounded-full bg-blue-500"></span><span data-i18n="catImportant">สำคัญ ไม่ด่วน</span></div>
+              <div class="rounded-xl bg-amber-50 px-3 py-2 text-amber-700"><span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-500"></span><span data-i18n="catUrgent">ด่วน ไม่สำคัญ</span></div>
+              <div class="rounded-xl bg-slate-100 px-3 py-2 text-slate-600"><span class="mr-1 inline-block h-2 w-2 rounded-full bg-slate-400"></span><span data-i18n="catLow">ไม่ด่วน ไม่สำคัญ</span></div>
+              <div class="col-span-2 rounded-xl bg-emerald-50 px-3 py-2 text-emerald-700"><span class="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-500"></span><span data-i18n="catFree">พักผ่อน / Free Time</span></div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-indigo-400/20 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4 text-white shadow-soft">
+            <div class="flex items-start gap-3">
+              <div class="grid h-9 w-9 place-items-center rounded-xl bg-white/10"><i data-lucide="sparkles" class="h-4 w-4"></i></div>
+              <div>
+                <div class="text-sm font-bold" data-i18n="compensationEngine">Compensation Engine</div>
+                <p id="compensationHint" class="mt-1 text-xs leading-5 text-slate-300"></p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Calendar -->
+      <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
+        <div id="calendarScroll" class="scrollbar-thin max-h-[70vh] overflow-auto">
+          <div id="calendarHeader" class="calendar-grid sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur"></div>
+          <div id="calendarBody" class="calendar-grid relative"></div>
+        </div>
+      </section>
+
+      <section class="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-3 text-xs leading-5 text-slate-500">
+        <strong class="text-slate-700" data-i18n="dayRhythmTitle">วางจังหวะของวัน:</strong> <span data-i18n="dayRhythmTip">ลากกิจวัตรขึ้น/ลงเพื่อเปลี่ยนเวลา • ลากขอบล่างเพื่อปรับระยะเวลา • คลิกกิจวัตรเพื่อบันทึกว่าสำเร็จหรือพลาด</span>
+      </section>
+    </main>
+  </div>
+
+  <!-- Event modal -->
+  <div id="eventModal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/35 p-3 md:p-6">
+    <div class="slide-up max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white p-5 shadow-float md:p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[.16em] text-slate-400" data-i18n="routine">Routine</div>
+          <h2 id="eventModalTitle" class="mt-1 text-xl font-bold">เพิ่มกิจวัตรใหม่</h2>
+        </div>
+        <button class="modal-close grid h-9 w-9 place-items-center rounded-xl bg-slate-100 hover:bg-slate-200"><i data-lucide="x" class="h-4 w-4"></i></button>
+      </div>
+
+      <form id="eventForm" class="mt-5 space-y-4">
+        <input id="eventId" type="hidden" />
+        <label class="block">
+          <span class="mb-1.5 block text-xs font-semibold text-slate-600" data-i18n="routineName">ชื่อกิจวัตร</span>
+          <input id="eventTitle" required maxlength="100" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-slate-400 focus:bg-white" data-i18n-placeholder="routinePlaceholder" placeholder="เช่น อ่านหนังสือสอบ 1 ชั่วโมง" />
+        </label>
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <label class="block sm:col-span-1">
+            <span class="mb-1.5 block text-xs font-semibold text-slate-600" data-i18n="date">วันที่</span>
+            <input id="eventDate" type="date" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm" />
+          </label>
+          <label class="block">
+            <span class="mb-1.5 block text-xs font-semibold text-slate-600" data-i18n="start">เริ่ม</span>
+            <input id="eventStart" type="time" step="60" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm" />
+          </label>
+          <label class="block">
+            <span class="mb-1.5 block text-xs font-semibold text-slate-600" data-i18n="end">สิ้นสุด</span>
+            <input id="eventEnd" type="time" step="60" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm" />
+          </label>
+        </div>
+
+        <div>
+          <span class="mb-2 block text-xs font-semibold text-slate-600" data-i18n="category">ประเภท</span>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <label class="category-option cursor-pointer"><input type="radio" class="peer sr-only" name="category" value="urgentImportant" checked><div class="rounded-2xl border border-slate-200 px-3 py-3 text-xs font-semibold peer-checked:border-rose-400 peer-checked:bg-rose-50 peer-checked:text-rose-700">🔥 <span data-i18n="catUrgentImportant">ด่วน + สำคัญ</span></div></label>
+            <label class="category-option cursor-pointer"><input type="radio" class="peer sr-only" name="category" value="important"><div class="rounded-2xl border border-slate-200 px-3 py-3 text-xs font-semibold peer-checked:border-blue-400 peer-checked:bg-blue-50 peer-checked:text-blue-700">🎯 <span data-i18n="catImportant">สำคัญ ไม่ด่วน</span></div></label>
+            <label class="category-option cursor-pointer"><input type="radio" class="peer sr-only" name="category" value="urgent"><div class="rounded-2xl border border-slate-200 px-3 py-3 text-xs font-semibold peer-checked:border-amber-400 peer-checked:bg-amber-50 peer-checked:text-amber-700">⚡ <span data-i18n="catUrgent">ด่วน ไม่สำคัญ</span></div></label>
+            <label class="category-option cursor-pointer"><input type="radio" class="peer sr-only" name="category" value="low"><div class="rounded-2xl border border-slate-200 px-3 py-3 text-xs font-semibold peer-checked:border-slate-400 peer-checked:bg-slate-100">🗂️ <span data-i18n="catLow">ไม่ด่วน ไม่สำคัญ</span></div></label>
+            <label class="category-option col-span-2 cursor-pointer sm:col-span-2"><input type="radio" class="peer sr-only" name="category" value="free"><div class="rounded-2xl border border-slate-200 px-3 py-3 text-xs font-semibold peer-checked:border-emerald-400 peer-checked:bg-emerald-50 peer-checked:text-emerald-700">🌿 <span data-i18n="catFree">พักผ่อน / Free Time</span></div></label>
+          </div>
+        </div>
+
+        <label class="block">
+          <span class="mb-1.5 block text-xs font-semibold text-slate-600" data-i18n="notes">โน้ต</span>
+          <textarea id="eventNotes" rows="3" maxlength="500" class="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm" data-i18n-placeholder="notesPlaceholder" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+        </label>
+
+        <div id="eventStatusSection" class="hidden rounded-2xl bg-slate-50 p-3">
+          <div class="mb-2 text-xs font-semibold text-slate-600" data-i18n="routineStatus">สถานะกิจวัตร</div>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" data-status="planned" class="status-btn rounded-xl border border-slate-200 bg-white px-2 py-2 text-xs font-semibold"> <span data-i18n="planned">วางแผนไว้</span></button>
+            <button type="button" data-status="done" class="status-btn rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-2 text-xs font-semibold text-emerald-700"> <span data-i18n="done">สำเร็จ</span></button>
+            <button type="button" data-status="missed" class="status-btn rounded-xl border border-rose-200 bg-rose-50 px-2 py-2 text-xs font-semibold text-rose-700"> <span data-i18n="missed">พลาด</span></button>
+          </div>
+        </div>
+
+        <div class="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
+          <button id="deleteEventBtn" type="button" class="hidden rounded-xl px-4 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"> <span data-i18n="deleteRoutine">ลบกิจวัตร</span></button>
+          <div class="ml-auto flex gap-2">
+            <button type="button" class="modal-close rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100"> <span data-i18n="cancel">ยกเลิก</span></button>
+            <button type="submit" class="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"> <span data-i18n="save">บันทึก</span></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Emergency modal -->
+  <div id="emergencyModal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/35 p-3 md:p-6">
+    <div class="slide-up w-full max-w-md rounded-3xl bg-white p-5 shadow-float md:p-6">
+      <div class="grid h-12 w-12 place-items-center rounded-2xl bg-rose-50 text-rose-600"><i data-lucide="heart-pulse" class="h-5 w-5"></i></div>
+      <h2 class="mt-4 text-xl font-bold" data-i18n="recoveryTitle">เปิด Recovery Mode วันนี้?</h2>
+      <p class="mt-2 text-sm leading-6 text-slate-500" data-i18n="recoveryDescription">กิจวัตรทั้งหมดของวันที่เลือกจะถูกย้ายเป็นสถานะ “พัก/ไม่จัดตาราง” โดยข้อมูลเดิมยังถูกเก็บไว้ใน localStorage</p>
+
+      <div class="mt-4 grid gap-2">
+        <button data-reason="sick" class="emergency-reason rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm font-semibold hover:bg-slate-50">🤒 <span data-i18n="reasonSick">ป่วย / ต้องพักฟื้น</span></button>
+        <button data-reason="urgent" class="emergency-reason rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm font-semibold hover:bg-slate-50">🚨 <span data-i18n="reasonUrgent">มีธุระด่วน</span></button>
+        <button data-reason="rest" class="emergency-reason rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm font-semibold hover:bg-slate-50">🛌 <span data-i18n="reasonRest">พักทั้งวัน</span></button>
+      </div>
+
+      <div class="mt-5 flex justify-end gap-2">
+        <button id="emergencyClose" class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100"> <span data-i18n="cancel">ยกเลิก</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="pointer-events-none fixed bottom-5 left-1/2 z-[70] hidden -translate-x-1/2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-float"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const STORAGE_KEY = 'dayflow-routine-planner-v1';
+      const THEME_KEY = 'dayflow-theme';
+      const LANG_KEY = 'dayflow-language';
+
+      const translations = {
+        th: {
+          tagline: 'สร้างจังหวะชีวิตที่ดีขึ้น', today: 'วันนี้', day: 'วัน', week: 'สัปดาห์', sickDay: 'โหมดพัก', addRoutine: 'เพิ่มกิจวัตร',
+          dailyProgress: 'ความคืบหน้าวันนี้', routinesToday: 'กิจวัตรวันนี้', done: 'สำเร็จ', missed: 'พลาด', freeTime: 'เวลาว่าง',
+          eisenhower: 'ตาราง Eisenhower', routineColors: 'สีของกิจวัตร', catUrgentImportant: 'ด่วน + สำคัญ', catImportant: 'สำคัญ ไม่ด่วน',
+          catUrgent: 'ด่วน ไม่สำคัญ', catLow: 'ไม่ด่วน ไม่สำคัญ', catFree: 'พักผ่อน / เวลาว่าง', catCompensation: 'ช่วงชดเชย',
+          compensationEngine: 'ระบบชดเชยเวลา', compensationDefault: 'เมื่อพลาดงานสำคัญ ระบบจะใช้ Free Time เพื่อสร้างช่วงชดเชยให้โดยอัตโนมัติ',
+          compensationCount: 'วันนี้มีช่วงชดเชยอัตโนมัติ {count} ช่วง ระบบลด Free Time ตามเวลาที่พลาดแล้ว',
+          dayRhythmTitle: 'วางจังหวะของวัน:', dayRhythmTip: 'ลากกิจวัตรขึ้น/ลงเพื่อเปลี่ยนเวลา • ลากขอบล่างเพื่อปรับระยะเวลา • คลิกกิจวัตรเพื่อบันทึกว่าสำเร็จหรือพลาด',
+          routine: 'กิจวัตร', addRoutineTitle: 'เพิ่มกิจวัตรใหม่', editRoutineTitle: 'แก้ไขกิจวัตร', routineName: 'ชื่อกิจวัตร',
+          routinePlaceholder: 'เช่น อ่านหนังสือสอบ 1 ชั่วโมง', date: 'วันที่', start: 'เริ่ม', end: 'สิ้นสุด', category: 'ประเภท', notes: 'โน้ต',
+          notesPlaceholder: 'รายละเอียดเพิ่มเติม (ถ้ามี)', routineStatus: 'สถานะกิจวัตร', planned: 'วางแผนไว้', deleteRoutine: 'ลบกิจวัตร', cancel: 'ยกเลิก', save: 'บันทึก',
+          recoveryTitle: 'เปิด Recovery Mode วันนี้?', recoveryDescription: 'กิจวัตรทั้งหมดของวันที่เลือกจะถูกย้ายเป็นสถานะ “พัก/ไม่จัดตาราง” โดยข้อมูลเดิมยังถูกเก็บไว้ใน localStorage',
+          reasonSick: 'ป่วย / ต้องพักฟื้น', reasonUrgent: 'มีธุระด่วน', reasonRest: 'พักทั้งวัน', activeDay: 'วันปกติ', recoveryMode: 'โหมดพักฟื้น',
+          time: 'เวลา', recovery: 'Recovery', weekOf: 'สัปดาห์ของ {date}', planHours: 'วางแผนจาก {start}:00 ถึง 24:00 • ข้อมูลเก็บในเครื่องนี้', hoursShort: 'ชม.',
+          theme: 'ธีม', themeLight: 'สว่าง', themeDark: 'Black', themeSystem: 'ตามระบบ', themeCurrentLight: 'ธีม: สว่าง', themeCurrentDark: 'ธีม: Black', themeCurrentSystem: 'ธีม: ระบบ', themeMenuLabel: 'เลือกธีม',
+          languageMenuLabel: 'เลือกภาษา', dragResize: 'ลากเพื่อปรับเวลา', timeUpdated: 'อัปเดตเวลาแล้ว', timeRange: 'เวลาต้องอยู่ระหว่าง {start}:00–24:00', minDuration: 'กิจวัตรต้องยาวอย่างน้อย {minutes} นาที',
+          statusDoneToast: 'เยี่ยม! ทำกิจวัตรสำเร็จแล้ว', statusMissedToast: 'บันทึกว่าพลาดแล้ว และตรวจหาเวลาชดเชยให้แล้ว', statusChangedToast: 'เปลี่ยนสถานะแล้ว',
+          compensationTitle: 'ชดเชย: {title}', compensationNote: 'สร้างอัตโนมัติเพราะพลาด “{title}” • แนะนำใช้ช่วงนี้กับการพัฒนาตนเอง เช่น อ่านหนังสือ ออกกำลังกาย หรือทบทวนงานสำคัญ',
+          freeUsedNote: 'ถูกใช้เป็นเวลาชดเชยอัตโนมัติ', freeReducedNote: 'ถูกลด {minutes} นาทีเพื่อชดเชยกิจวัตรที่พลาด', noFreeTime: 'ไม่พบ Free Time สำหรับสร้างช่วงชดเชย', partialComp: 'ชดเชยได้ {minutes} นาที แต่ Free Time ไม่พอทั้งหมด',
+          recoveryOpened: 'เปิด Recovery Mode: {reason}', activeRestored: 'กลับสู่ Active Day แล้ว', alreadyRecovery: 'วันนี้อยู่ใน Recovery Mode อยู่แล้ว ต้องการกลับมาใช้ตารางเดิมหรือไม่?',
+          routineSaved: 'บันทึกกิจวัตรแล้ว', deleteConfirm: 'ลบ “{title}” ใช่หรือไม่?', routineDeleted: 'ลบกิจวัตรแล้ว',
+          samplePlanning: 'วางแผนเช้า', samplePlanningNote: 'วางเป้าหมายสำคัญของวัน', sampleDeadline: 'งาน/เรียนที่ต้องส่ง', sampleLunch: 'พักกลางวัน', sampleUpskill: 'อ่านหนังสือ / Upskill', sampleFree: 'เวลาว่าง', sampleFreeNote: 'เวลาพักผ่อนสำรองสำหรับระบบชดเชย'
+        },
+        en: {
+          tagline: 'Build a better rhythm', today: 'Today', day: 'Day', week: 'Week', sickDay: 'Sick Day', addRoutine: 'Add routine',
+          dailyProgress: 'Daily progress', routinesToday: "Today's routines", done: 'Done', missed: 'Missed', freeTime: 'Free Time',
+          eisenhower: 'ตาราง Eisenhower', routineColors: 'Routine colors', catUrgentImportant: 'Urgent + Important', catImportant: 'Important, Not Urgent',
+          catUrgent: 'Urgent, Not Important', catLow: 'Not Urgent, Not Important', catFree: 'Rest / Free Time', catCompensation: 'Compensation',
+          compensationEngine: 'Compensation Engine', compensationDefault: 'When an important routine is missed, the system automatically uses Free Time to create a compensation block.',
+          compensationCount: 'There {count,plural} {count} automatic compensation block{suffix} today. Free Time has been reduced accordingly.',
+          dayRhythmTitle: 'Shape your day:', dayRhythmTip: 'Drag a routine up/down to change its time • Drag the bottom edge to resize • Click a routine to mark it done or missed',
+          routine: 'Routine', addRoutineTitle: 'Add new routine', editRoutineTitle: 'Edit routine', routineName: 'Routine name',
+          routinePlaceholder: 'e.g. Study for 1 hour', date: 'Date', start: 'Start', end: 'End', category: 'Category', notes: 'Notes',
+          notesPlaceholder: 'Additional details (optional)', routineStatus: 'Routine status', planned: 'Planned', deleteRoutine: 'Delete routine', cancel: 'Cancel', save: 'Save',
+          recoveryTitle: 'Enable Recovery Mode today?', recoveryDescription: 'All routines on the selected day will be unscheduled while their original data remains saved in localStorage.',
+          reasonSick: 'Sick / Need recovery', reasonUrgent: 'Urgent matter', reasonRest: 'Rest all day', activeDay: 'Active Day', recoveryMode: 'Recovery Mode',
+          time: 'Time', recovery: 'Recovery', weekOf: 'Week of {date}', planHours: 'Plan from {start}:00 to 24:00 • Data is stored on this device', hoursShort: 'hrs',
+          theme: 'Theme', themeLight: 'Light', themeDark: 'Black', themeSystem: 'System', themeCurrentLight: 'Theme: Light', themeCurrentDark: 'Theme: Black', themeCurrentSystem: 'Theme: System', themeMenuLabel: 'Choose theme',
+          languageMenuLabel: 'Choose language', dragResize: 'Drag to resize', timeUpdated: 'Time updated', timeRange: 'Time must be between {start}:00–24:00', minDuration: 'Routine must be at least {minutes} minute(s)',
+          statusDoneToast: 'Great! Routine completed.', statusMissedToast: 'Marked as missed and checked for compensation time.', statusChangedToast: 'Status updated.',
+          compensationTitle: 'Compensate: {title}', compensationNote: 'Created automatically because “{title}” was missed • Use this time for self-development such as reading, exercise, or reviewing an important task.',
+          freeUsedNote: 'Used automatically for compensation', freeReducedNote: 'Reduced by {minutes} minutes to compensate for a missed routine', noFreeTime: 'No Free Time is available for compensation', partialComp: 'Compensated {minutes} minutes, but there was not enough Free Time',
+          recoveryOpened: 'Recovery Mode enabled: {reason}', activeRestored: 'Active Day restored', alreadyRecovery: 'This day is already in Recovery Mode. Restore the original schedule?',
+          routineSaved: 'Routine saved', deleteConfirm: 'Delete “{title}”?', routineDeleted: 'Routine deleted',
+          samplePlanning: 'Morning planning', samplePlanningNote: 'Set the most important goals for the day', sampleDeadline: 'Work / assignment deadline', sampleLunch: 'Lunch break', sampleUpskill: 'Reading / Upskill', sampleFree: 'Free Time', sampleFreeNote: 'Backup rest time for automatic compensation'
+        }
+      };
+
+      let currentLanguage = ['th','en'].includes(localStorage.getItem(LANG_KEY)) ? localStorage.getItem(LANG_KEY) : 'th';
+
+      function t(key, vars = {}) {
+        let text = translations[currentLanguage]?.[key] ?? translations.th[key] ?? key;
+        if (currentLanguage === 'en' && key === 'compensationCount') {
+          const count = Number(vars.count ?? 0);
+          return `There ${count === 1 ? 'is' : 'are'} ${count} automatic compensation block${count === 1 ? '' : 's'} today. Free Time has been reduced accordingly.`;
+        }
+        return String(text).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? `{${name}}`);
+      }
+
+      function translateReason(reason) {
+        const map = { sick: 'reasonSick', urgent: 'reasonUrgent', rest: 'reasonRest', 'ป่วย': 'reasonSick', 'มีธุระด่วน': 'reasonUrgent', 'พักทั้งวัน': 'reasonRest' };
+        return map[reason] ? t(map[reason]) : reason;
+      }
+
+      const DAY_START = 6;
+      const DAY_END = 24;
+      const MIN_EVENT_MINUTES = 1;
+      const SNAP_MINUTES = 1;
+
+      const categoryMeta = {
+        urgentImportant: { label: t('catUrgentImportant'), classes: 'bg-rose-100 text-rose-900 border border-rose-200', dot: 'bg-rose-500', important: true, urgent: true },
+        important:       { label: t('catImportant'), classes: 'bg-blue-100 text-blue-900 border border-blue-200', dot: 'bg-blue-500', important: true, urgent: false },
+        urgent:          { label: t('catUrgent'), classes: 'bg-amber-100 text-amber-900 border border-amber-200', dot: 'bg-amber-500', important: false, urgent: true },
+        low:             { label: t('catLow'), classes: 'bg-slate-100 text-slate-800 border border-slate-200', dot: 'bg-slate-400', important: false, urgent: false },
+        free:            { label: t('catFree'), classes: 'bg-emerald-100 text-emerald-900 border border-emerald-200', dot: 'bg-emerald-500', important: false, urgent: false },
+        compensation:    { label: t('catCompensation'), classes: 'bg-violet-100 text-violet-900 border border-violet-200', dot: 'bg-violet-500', important: true, urgent: false }
+      };
+
+      let state = loadState();
+      let selectedEmergencyReason = '';
+
+      const els = {
+        calendarHeader: document.getElementById('calendarHeader'),
+        calendarBody: document.getElementById('calendarBody'),
+        calendarScroll: document.getElementById('calendarScroll'),
+        dateTitle: document.getElementById('dateTitle'),
+        dateSubtitle: document.getElementById('dateSubtitle'),
+        modeDot: document.getElementById('modeDot'),
+        modeLabel: document.getElementById('modeLabel'),
+        statTotal: document.getElementById('statTotal'),
+        statDone: document.getElementById('statDone'),
+        statMissed: document.getElementById('statMissed'),
+        statFree: document.getElementById('statFree'),
+        compensationHint: document.getElementById('compensationHint'),
+        progressFill: document.getElementById('progressFill'),
+        progressText: document.getElementById('progressText'),
+        themeBtn: document.getElementById('themeBtn'),
+        themeBtnLabel: document.getElementById('themeBtnLabel'),
+        themeMenu: document.getElementById('themeMenu'),
+        themeControl: document.getElementById('themeControl'),
+        themeOptions: [...document.querySelectorAll('[data-theme-option]')],
+        themeColorMeta: document.getElementById('themeColorMeta'),
+        languageBtn: document.getElementById('languageBtn'),
+        languageBtnLabel: document.getElementById('languageBtnLabel'),
+        languageMenu: document.getElementById('languageMenu'),
+        languageControl: document.getElementById('languageControl'),
+        languageOptions: [...document.querySelectorAll('[data-language-option]')],
+        eventModal: document.getElementById('eventModal'),
+        eventForm: document.getElementById('eventForm'),
+        eventModalTitle: document.getElementById('eventModalTitle'),
+        eventId: document.getElementById('eventId'),
+        eventTitle: document.getElementById('eventTitle'),
+        eventDate: document.getElementById('eventDate'),
+        eventStart: document.getElementById('eventStart'),
+        eventEnd: document.getElementById('eventEnd'),
+        eventNotes: document.getElementById('eventNotes'),
+        deleteEventBtn: document.getElementById('deleteEventBtn'),
+        eventStatusSection: document.getElementById('eventStatusSection'),
+        emergencyModal: document.getElementById('emergencyModal'),
+        toast: document.getElementById('toast')
+      };
+
+      function closeLanguageMenu() {
+        els.languageMenu?.classList.add('hidden');
+        els.languageBtn?.setAttribute('aria-expanded', 'false');
+      }
+
+      function applyLanguage(lang, rerender = true) {
+        currentLanguage = lang === 'en' ? 'en' : 'th';
+        localStorage.setItem(LANG_KEY, currentLanguage);
+        document.documentElement.lang = currentLanguage === 'en' ? 'en' : 'th';
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          el.textContent = t(el.dataset.i18n);
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
+        });
+
+        if (els.languageBtnLabel) els.languageBtnLabel.textContent = currentLanguage === 'th' ? 'ไทย' : 'EN';
+        if (els.languageBtn) els.languageBtn.setAttribute('aria-label', currentLanguage === 'th' ? 'ภาษา: ไทย' : 'Language: English');
+        if (els.languageMenu) els.languageMenu.setAttribute('aria-label', t('languageMenuLabel'));
+        if (els.themeMenu) els.themeMenu.setAttribute('aria-label', t('themeMenuLabel'));
+
+        els.languageOptions?.forEach(option => {
+          const selected = option.dataset.languageOption === currentLanguage;
+          option.setAttribute('aria-checked', String(selected));
+          option.classList.toggle('bg-slate-100', selected);
+          option.classList.toggle('font-semibold', selected);
+          option.querySelector('[data-language-check]')?.classList.toggle('hidden', !selected);
+        });
+
+        categoryMeta.urgentImportant.label = t('catUrgentImportant');
+        categoryMeta.important.label = t('catImportant');
+        categoryMeta.urgent.label = t('catUrgent');
+        categoryMeta.low.label = t('catLow');
+        categoryMeta.free.label = t('catFree');
+        categoryMeta.compensation.label = t('catCompensation');
+        if (els.eventModalTitle) els.eventModalTitle.textContent = els.eventId?.value ? t('editRoutineTitle') : t('addRoutineTitle');
+
+        applyTheme(activeThemePreference);
+        if (rerender) render();
+        if (window.lucide) lucide.createIcons();
+      }
+
+      const systemThemeMedia = window.matchMedia?.('(prefers-color-scheme: dark)');
+      let activeThemePreference = 'system';
+
+      function resolvedTheme(theme) {
+        if (theme === 'system') return systemThemeMedia?.matches ? 'dark' : 'light';
+        return theme === 'dark' ? 'dark' : 'light';
+      }
+
+      function closeThemeMenu() {
+        els.themeMenu?.classList.add('hidden');
+        els.themeBtn?.setAttribute('aria-expanded', 'false');
+      }
+
+      function applyTheme(theme) {
+        const preference = ['light', 'dark', 'system'].includes(theme) ? theme : 'system';
+        const resolved = resolvedTheme(preference);
+        const dark = resolved === 'dark';
+        activeThemePreference = preference;
+
+        document.documentElement.classList.toggle('dark', dark);
+        localStorage.setItem(THEME_KEY, preference);
+        if (els.themeColorMeta) els.themeColorMeta.setAttribute('content', dark ? '#090b10' : '#f6f7fb');
+
+        const labels = { light: t('themeCurrentLight'), dark: t('themeCurrentDark'), system: t('themeCurrentSystem') };
+        if (els.themeBtnLabel) els.themeBtnLabel.textContent = labels[preference];
+        if (els.themeBtn) els.themeBtn.setAttribute('aria-label', labels[preference]);
+        const lightLabel = document.querySelector('[data-theme-option="light"] .flex-1');
+        const darkLabel = document.querySelector('[data-theme-option="dark"] .flex-1');
+        const systemLabel = document.querySelector('[data-theme-option="system"] .flex-1');
+        if (lightLabel) lightLabel.textContent = t('themeLight');
+        if (darkLabel) darkLabel.textContent = t('themeDark');
+        if (systemLabel) systemLabel.textContent = t('themeSystem');
+
+        els.themeOptions?.forEach((option) => {
+          const selected = option.dataset.themeOption === preference;
+          option.setAttribute('aria-checked', String(selected));
+          option.classList.toggle('bg-slate-100', selected);
+          option.classList.toggle('font-semibold', selected);
+          option.querySelector('[data-theme-check]')?.classList.toggle('hidden', !selected);
+        });
+
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function initialTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        return ['dark', 'light', 'system'].includes(saved) ? saved : 'system';
+      }
+
+      function uid() {
+        return (crypto.randomUUID?.() || `id-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+      }
+
+      function localISODate(date = new Date()) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function parseLocalDate(iso) {
+        const [y, m, d] = iso.split('-').map(Number);
+        return new Date(y, m - 1, d);
+      }
+
+      function addDays(iso, amount) {
+        const d = parseLocalDate(iso);
+        d.setDate(d.getDate() + amount);
+        return localISODate(d);
+      }
+
+      function startOfWeek(iso) {
+        const d = parseLocalDate(iso);
+        const weekday = d.getDay();
+        const offset = weekday === 0 ? -6 : 1 - weekday;
+        d.setDate(d.getDate() + offset);
+        return localISODate(d);
+      }
+
+      function timeToMinutes(time) {
+        const [h, m] = time.split(':').map(Number);
+        return h * 60 + m;
+      }
+
+      function minutesToTime(total) {
+        const clamped = Math.max(0, Math.min(24 * 60, Math.round(total)));
+        if (clamped >= 24 * 60) return '23:59'; // HTML <input type="time"> does not accept 24:00
+        const h = Math.floor(clamped / 60);
+        const m = clamped % 60;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      }
+
+      function snapMinutes(mins) {
+        return Math.round(mins / SNAP_MINUTES) * SNAP_MINUTES;
+      }
+
+      function durationMinutes(event) {
+        return Math.max(0, timeToMinutes(event.end) - timeToMinutes(event.start));
+      }
+
+      function escapeHTML(value = '') {
+        return value.replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch]));
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved && Array.isArray(saved.events)) {
+            return {
+              events: saved.events,
+              dayModes: saved.dayModes || {},
+              selectedDate: saved.selectedDate || localISODate(),
+              view: saved.view === 'week' ? 'week' : 'day'
+            };
+          }
+        } catch (err) {
+          console.warn('Could not load saved state:', err);
+        }
+
+        const today = localISODate();
+        return {
+          selectedDate: today,
+          view: 'day',
+          dayModes: {},
+          events: [
+            createEvent(t('samplePlanning'), today, '07:30', '08:00', 'important', 'planned', t('samplePlanningNote')),
+            createEvent(t('sampleDeadline'), today, '09:00', '10:30', 'urgentImportant', 'planned', ''),
+            createEvent(t('sampleLunch'), today, '12:00', '13:00', 'free', 'planned', ''),
+            createEvent(t('sampleUpskill'), today, '16:00', '17:00', 'important', 'planned', ''),
+            createEvent(t('sampleFree'), today, '19:00', '21:00', 'free', 'planned', t('sampleFreeNote'))
+          ]
+        };
+      }
+
+      function createEvent(title, date, start, end, category = 'low', status = 'planned', notes = '') {
+        const meta = categoryMeta[category] || categoryMeta.low;
+        return {
+          id: uid(), title, date, start, end, category, status, notes,
+          important: meta.important,
+          urgent: meta.urgent,
+          type: category === 'free' ? 'free' : category === 'compensation' ? 'compensation' : 'routine',
+          createdAt: new Date().toISOString(),
+          compensationFor: null,
+          compensationGenerated: false
+        };
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function getVisibleDates() {
+        if (state.view === 'day') return [state.selectedDate];
+        const start = startOfWeek(state.selectedDate);
+        return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+      }
+
+      function formatDate(iso, opts = {}) {
+        const locale = currentLanguage === 'en' ? 'en-US' : 'th-TH';
+        const options = { day: 'numeric', month: opts.month || 'long' };
+        if (opts.weekday) options.weekday = opts.weekday;
+        if (opts.year !== false) options.year = opts.year || 'numeric';
+        return new Intl.DateTimeFormat(locale, options).format(parseLocalDate(iso));
+      }
+
+      function formatDayHeader(iso) {
+        const d = parseLocalDate(iso);
+        const locale = currentLanguage === 'en' ? 'en-US' : 'th-TH';
+        const weekday = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(d);
+        const day = d.getDate();
+        return { weekday, day };
+      }
+
+      function currentModeForSelectedDate() {
+        return state.dayModes[state.selectedDate] || null;
+      }
+
+      function updateOverview() {
+        const selected = parseLocalDate(state.selectedDate);
+        const weekStart = startOfWeek(state.selectedDate);
+        const weekEnd = addDays(weekStart, 6);
+        const weekTitleDate = formatDate(weekStart, { month: 'short', year: 'numeric' });
+        els.dateTitle.textContent = state.view === 'week' ? t('weekOf', { date: weekTitleDate }) : formatDate(state.selectedDate, { weekday: 'long' });
+        els.dateSubtitle.textContent = state.view === 'week'
+          ? `${formatDate(weekStart, { month: 'short', year: false })} – ${formatDate(weekEnd, { month: 'short', year: 'numeric' })}`
+          : t('planHours', { start: DAY_START });
+
+        const mode = currentModeForSelectedDate();
+        if (mode) {
+          els.modeDot.className = 'h-2 w-2 rounded-full bg-rose-500';
+          els.modeLabel.textContent = `${t('recoveryMode')} • ${translateReason(mode.reason)}`;
+        } else {
+          els.modeDot.className = 'h-2 w-2 rounded-full bg-emerald-500';
+          els.modeLabel.textContent = t('activeDay');
+        }
+
+        const todayEvents = state.events.filter(e => e.date === state.selectedDate && e.status !== 'unscheduled');
+        const freeMinutes = todayEvents.filter(e => e.category === 'free').reduce((sum, e) => sum + durationMinutes(e), 0);
+        els.statTotal.textContent = todayEvents.length;
+        els.statDone.textContent = todayEvents.filter(e => e.status === 'done').length;
+        els.statMissed.textContent = todayEvents.filter(e => e.status === 'missed').length;
+        els.statFree.textContent = `${(freeMinutes / 60).toFixed(freeMinutes % 60 === 0 ? 0 : 1)} ${t('hoursShort')}`;
+
+        const actionable = todayEvents.filter(e => e.category !== 'free');
+        const doneCount = actionable.filter(e => e.status === 'done').length;
+        const progress = actionable.length ? Math.round((doneCount / actionable.length) * 100) : 0;
+        if (els.progressFill) els.progressFill.style.width = `${progress}%`;
+        if (els.progressText) els.progressText.textContent = `${progress}%`;
+
+        const compCount = todayEvents.filter(e => e.category === 'compensation').length;
+        els.compensationHint.textContent = compCount
+          ? t('compensationCount', { count: compCount })
+          : t('compensationDefault');
+
+        document.querySelectorAll('.view-btn').forEach(btn => {
+          const active = btn.dataset.view === state.view;
+          btn.classList.toggle('bg-white', active);
+          btn.classList.toggle('shadow-sm', active);
+          btn.classList.toggle('text-slate-900', active);
+          btn.classList.toggle('text-slate-500', !active);
+        });
+      }
+
+      function renderCalendar() {
+        const dates = getVisibleDates();
+        document.documentElement.style.setProperty('--days-count', dates.length);
+        const totalHeight = (DAY_END - DAY_START) * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+
+        els.calendarHeader.innerHTML = `<div class="sticky left-0 z-40 border-r border-slate-200 bg-white px-2 py-3 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-400">${t('time')}</div>` + dates.map(date => {
+          const { weekday, day } = formatDayHeader(date);
+          const isToday = date === localISODate();
+          const dayMode = state.dayModes[date];
+          return `<button data-date-header="${date}" class="min-w-0 border-r border-slate-100 px-2 py-2 text-center hover:bg-slate-50">
+            <div class="text-[11px] font-semibold text-slate-400">${weekday}</div>
+            <div class="mx-auto mt-1 grid h-8 w-8 place-items-center rounded-full text-sm font-bold ${isToday ? 'bg-slate-900 text-white' : 'text-slate-800'}">${day}</div>
+            ${dayMode ? `<div class="mt-1 truncate text-[9px] font-semibold text-rose-500">${t('recovery')}</div>` : ''}
+          </button>`;
+        }).join('');
+
+        const labels = [];
+        for (let h = DAY_START; h < DAY_END; h++) {
+          labels.push(`<div class="relative" style="height:var(--hour-height)"><span class="absolute -top-2.5 right-3 text-[10px] font-medium text-slate-400">${String(h).padStart(2,'0')}:00</span></div>`);
+        }
+
+        const timeCol = `<div class="sticky left-0 z-20 border-r border-slate-200 bg-white time-grid-bg" style="height:${totalHeight}px">${labels.join('')}</div>`;
+        const dayCols = dates.map(date => `<div class="day-column quarter-grid-bg time-grid-bg relative border-r border-slate-100 bg-white" data-date="${date}" style="height:${totalHeight}px"></div>`).join('');
+        els.calendarBody.innerHTML = timeCol + dayCols;
+
+        dates.forEach(date => renderEventsForDate(date));
+        renderNowLine();
+        bindEmptySlotCreation();
+        bindDateHeaders();
+        lucide.createIcons();
+      }
+
+      function renderEventsForDate(date) {
+        const column = els.calendarBody.querySelector(`.day-column[data-date="${date}"]`);
+        if (!column) return;
+        column.querySelectorAll('.event-card').forEach(el => el.remove());
+
+        const visibleEvents = state.events
+          .filter(e => e.date === date && e.status !== 'unscheduled')
+          .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+        visibleEvents.forEach(event => {
+          const startMin = timeToMinutes(event.start);
+          const endMin = timeToMinutes(event.end);
+          if (endMin <= DAY_START * 60 || startMin >= DAY_END * 60) return;
+
+          const topMin = Math.max(startMin, DAY_START * 60) - DAY_START * 60;
+          const durMin = Math.max(MIN_EVENT_MINUTES, Math.min(endMin, DAY_END * 60) - Math.max(startMin, DAY_START * 60));
+          const hourHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+          const top = (topMin / 60) * hourHeight;
+          const height = Math.max(24, (durMin / 60) * hourHeight);
+          const meta = categoryMeta[event.category] || categoryMeta.low;
+          const statusIcon = event.status === 'done' ? '✓' : event.status === 'missed' ? '!' : '';
+          const statusClass = event.status === 'done' ? 'ring-2 ring-emerald-400/50 opacity-75' : event.status === 'missed' ? 'ring-2 ring-rose-400/60' : '';
+
+          const card = document.createElement('div');
+          card.className = `event-card ${meta.classes} ${statusClass}`;
+          card.dataset.id = event.id;
+          card.style.top = `${top}px`;
+          card.style.height = `${height}px`;
+          card.innerHTML = `
+            <div class="flex items-start gap-1.5">
+              <span class="mt-1 h-2 w-2 shrink-0 rounded-full ${meta.dot}"></span>
+              <div class="min-w-0 flex-1">
+                <div class="truncate font-bold">${escapeHTML(event.title)}</div>
+                <div class="mt-0.5 truncate text-[10px] opacity-70">${event.start}–${event.end} ${statusIcon ? `• ${statusIcon}` : ''}</div>
+              </div>
+            </div>
+            <div class="resize-handle" title="${t('dragResize')}"></div>`;
+
+          attachEventInteractions(card, event);
+          column.appendChild(card);
+        });
+      }
+
+      function renderNowLine() {
+        const now = new Date();
+        const today = localISODate(now);
+        const column = els.calendarBody.querySelector(`.day-column[data-date="${today}"]`);
+        if (!column) return;
+        const mins = now.getHours() * 60 + now.getMinutes();
+        if (mins < DAY_START * 60 || mins > DAY_END * 60) return;
+        const hourHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+        const line = document.createElement('div');
+        line.className = 'now-line';
+        line.style.top = `${((mins - DAY_START * 60) / 60) * hourHeight}px`;
+        column.appendChild(line);
+      }
+
+      function bindDateHeaders() {
+        els.calendarHeader.querySelectorAll('[data-date-header]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.selectedDate = btn.dataset.dateHeader;
+            if (window.innerWidth < 720) state.view = 'day';
+            saveState();
+            render();
+          });
+        });
+      }
+
+      function bindEmptySlotCreation() {
+        els.calendarBody.querySelectorAll('.day-column').forEach(col => {
+          col.addEventListener('dblclick', e => {
+            if (e.target.closest('.event-card')) return;
+            const rect = col.getBoundingClientRect();
+            const hourHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+            const y = e.clientY - rect.top;
+            let start = snapMinutes(DAY_START * 60 + (y / hourHeight) * 60);
+            start = Math.max(DAY_START * 60, Math.min(DAY_END * 60 - 30, start));
+            openEventModal(null, { date: col.dataset.date, start: minutesToTime(start), end: minutesToTime(start + 60) });
+          });
+        });
+      }
+
+      function attachEventInteractions(card, event) {
+        let pointerStartY = 0;
+        let originalStart = 0;
+        let originalEnd = 0;
+        let mode = null;
+        let moved = false;
+
+        card.addEventListener('pointerdown', e => {
+          if (e.button !== undefined && e.button !== 0) return;
+          const isResize = !!e.target.closest('.resize-handle');
+          mode = isResize ? 'resize' : 'drag';
+          pointerStartY = e.clientY;
+          originalStart = timeToMinutes(event.start);
+          originalEnd = timeToMinutes(event.end);
+          moved = false;
+          card.setPointerCapture(e.pointerId);
+          card.classList.add(isResize ? 'resizing' : 'dragging');
+          e.preventDefault();
+        });
+
+        card.addEventListener('pointermove', e => {
+          if (!mode || !card.hasPointerCapture(e.pointerId)) return;
+          const hourHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+          const deltaMinutes = snapMinutes(((e.clientY - pointerStartY) / hourHeight) * 60);
+          if (Math.abs(deltaMinutes) >= SNAP_MINUTES) moved = true;
+
+          if (mode === 'drag') {
+            const duration = originalEnd - originalStart;
+            let newStart = originalStart + deltaMinutes;
+            newStart = Math.max(DAY_START * 60, Math.min(DAY_END * 60 - duration, newStart));
+            event.start = minutesToTime(newStart);
+            event.end = minutesToTime(newStart + duration);
+          } else {
+            let newEnd = originalEnd + deltaMinutes;
+            newEnd = Math.max(originalStart + MIN_EVENT_MINUTES, Math.min(DAY_END * 60, newEnd));
+            event.end = minutesToTime(newEnd);
+          }
+          positionCard(card, event);
+        });
+
+        card.addEventListener('pointerup', e => {
+          if (!mode) return;
+          if (card.hasPointerCapture(e.pointerId)) card.releasePointerCapture(e.pointerId);
+          card.classList.remove('dragging', 'resizing');
+          const wasMoved = moved;
+          mode = null;
+          if (wasMoved) {
+            saveState();
+            render();
+            showToast(t('timeUpdated'));
+          } else if (!e.target.closest('.resize-handle')) {
+            openEventModal(event.id);
+          }
+        });
+
+        card.addEventListener('pointercancel', () => {
+          mode = null;
+          card.classList.remove('dragging', 'resizing');
+        });
+      }
+
+      function positionCard(card, event) {
+        const hourHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+        const top = ((timeToMinutes(event.start) - DAY_START * 60) / 60) * hourHeight;
+        const height = Math.max(24, (durationMinutes(event) / 60) * hourHeight);
+        card.style.top = `${top}px`;
+        card.style.height = `${height}px`;
+        const timeLabel = card.querySelector('.text-\\[10px\\]');
+        if (timeLabel) timeLabel.textContent = `${event.start}–${event.end}`;
+      }
+
+      function openEventModal(id = null, defaults = {}) {
+        els.eventForm.reset();
+        els.eventId.value = id || '';
+        els.eventStatusSection.classList.toggle('hidden', !id);
+        els.deleteEventBtn.classList.toggle('hidden', !id);
+
+        let event = id ? state.events.find(e => e.id === id) : null;
+        if (event) {
+          els.eventModalTitle.textContent = t('editRoutineTitle');
+          els.eventTitle.value = event.title;
+          els.eventDate.value = event.date;
+          els.eventStart.value = event.start;
+          els.eventEnd.value = event.end;
+          els.eventNotes.value = event.notes || '';
+          const categoryInput = document.querySelector(`input[name="category"][value="${event.category === 'compensation' ? 'important' : event.category}"]`);
+          if (categoryInput) categoryInput.checked = true;
+          highlightStatus(event.status);
+        } else {
+          els.eventModalTitle.textContent = t('addRoutineTitle');
+          els.eventDate.value = defaults.date || state.selectedDate;
+          els.eventStart.value = defaults.start || '09:00';
+          els.eventEnd.value = defaults.end || '10:00';
+          els.eventTitle.value = defaults.title || '';
+          els.eventNotes.value = defaults.notes || '';
+          const defaultCategory = defaults.category || 'important';
+          const categoryInput = document.querySelector(`input[name="category"][value="${defaultCategory}"]`);
+          if (categoryInput) categoryInput.checked = true;
+        }
+
+        showModal(els.eventModal);
+        setTimeout(() => els.eventTitle.focus(), 120);
+      }
+
+      function highlightStatus(status) {
+        document.querySelectorAll('.status-btn').forEach(btn => {
+          const active = btn.dataset.status === status;
+          btn.classList.toggle('ring-2', active);
+          btn.classList.toggle('ring-slate-900', active);
+          btn.classList.toggle('ring-offset-2', active);
+        });
+      }
+
+      function showModal(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex', 'fade-in');
+        document.body.classList.add('overflow-hidden');
+      }
+
+      function hideModal(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex', 'fade-in');
+        if (![els.eventModal, els.emergencyModal].some(m => !m.classList.contains('hidden'))) {
+          document.body.classList.remove('overflow-hidden');
+        }
+      }
+
+      function selectedCategory() {
+        return document.querySelector('input[name="category"]:checked')?.value || 'low';
+      }
+
+      function validateTimeRange(start, end) {
+        const s = timeToMinutes(start), e = timeToMinutes(end);
+        if (s < DAY_START * 60 || e > DAY_END * 60) return t('timeRange', { start: DAY_START });
+        if (e - s < MIN_EVENT_MINUTES) return t('minDuration', { minutes: MIN_EVENT_MINUTES });
+        return '';
+      }
+
+      function upsertEventFromForm() {
+        const id = els.eventId.value;
+        const category = selectedCategory();
+        const start = els.eventStart.value;
+        const end = els.eventEnd.value;
+        const error = validateTimeRange(start, end);
+        if (error) {
+          showToast(error);
+          return false;
+        }
+
+        const meta = categoryMeta[category];
+        if (id) {
+          const event = state.events.find(e => e.id === id);
+          if (!event) return false;
+          Object.assign(event, {
+            title: els.eventTitle.value.trim(),
+            date: els.eventDate.value,
+            start, end, category,
+            important: meta.important,
+            urgent: meta.urgent,
+            type: category === 'free' ? 'free' : 'routine',
+            notes: els.eventNotes.value.trim()
+          });
+        } else {
+          state.events.push(createEvent(
+            els.eventTitle.value.trim(),
+            els.eventDate.value,
+            start,
+            end,
+            category,
+            'planned',
+            els.eventNotes.value.trim()
+          ));
+        }
+        saveState();
+        return true;
+      }
+
+      function setEventStatus(id, newStatus) {
+        const event = state.events.find(e => e.id === id);
+        if (!event) return;
+        const oldStatus = event.status;
+        event.status = newStatus;
+
+        if (newStatus === 'missed' && oldStatus !== 'missed' && event.important && event.category !== 'free' && event.category !== 'compensation') {
+          compensateMissedEvent(event);
+        }
+
+        saveState();
+        hideModal(els.eventModal);
+        render();
+        showToast(newStatus === 'done' ? t('statusDoneToast') : newStatus === 'missed' ? t('statusMissedToast') : t('statusChangedToast'));
+      }
+
+      function compensateMissedEvent(missedEvent) {
+        if (missedEvent.compensationGenerated) return;
+
+        let remaining = durationMinutes(missedEvent);
+        if (remaining <= 0) return;
+
+        const freeSlots = state.events
+          .filter(e => e.date === missedEvent.date && e.category === 'free' && e.status === 'planned' && durationMinutes(e) >= MIN_EVENT_MINUTES)
+          .sort((a, b) => durationMinutes(b) - durationMinutes(a));
+
+        let generated = 0;
+        for (const free of freeSlots) {
+          if (remaining <= 0) break;
+          const freeDuration = durationMinutes(free);
+          const use = Math.min(freeDuration, remaining);
+          const compStart = timeToMinutes(free.start);
+          const compEnd = compStart + use;
+
+          const compensation = createEvent(
+            t('compensationTitle', { title: missedEvent.title }),
+            missedEvent.date,
+            minutesToTime(compStart),
+            minutesToTime(compEnd),
+            'compensation',
+            'planned',
+            t('compensationNote', { title: missedEvent.title })
+          );
+          compensation.compensationFor = missedEvent.id;
+          state.events.push(compensation);
+          generated += use;
+
+          if (use >= freeDuration) {
+            free.status = 'unscheduled';
+            free.notes = `${free.notes ? free.notes + ' • ' : ''}${t('freeUsedNote')}`;
+          } else {
+            free.start = minutesToTime(compEnd);
+            free.notes = `${free.notes ? free.notes + ' • ' : ''}${t('freeReducedNote', { minutes: use })}`;
+          }
+
+          remaining -= use;
+        }
+
+        missedEvent.compensationGenerated = true;
+        missedEvent.compensationMinutes = generated;
+
+        if (generated === 0) {
+          showToast(t('noFreeTime'));
+        } else if (remaining > 0) {
+          showToast(t('partialComp', { minutes: generated }));
+        }
+      }
+
+
+      function activateEmergency(reason) {
+        const date = state.selectedDate;
+        state.dayModes[date] = { reason, activatedAt: new Date().toISOString() };
+        state.events.forEach(e => {
+          if (e.date === date && e.status !== 'done') {
+            e.previousStatus = e.status;
+            e.status = 'unscheduled';
+            e.unscheduledReason = reason;
+          }
+        });
+        saveState();
+        hideModal(els.emergencyModal);
+        render();
+        showToast(t('recoveryOpened', { reason: translateReason(reason) }));
+      }
+
+      function clearRecoveryMode() {
+        const date = state.selectedDate;
+        if (!state.dayModes[date]) return;
+        delete state.dayModes[date];
+        state.events.forEach(e => {
+          if (e.date === date && e.status === 'unscheduled' && e.unscheduledReason) {
+            e.status = e.previousStatus || 'planned';
+            delete e.unscheduledReason;
+            delete e.previousStatus;
+          }
+        });
+        saveState();
+        render();
+        showToast(t('activeRestored'));
+      }
+
+      function showToast(message) {
+        els.toast.textContent = message;
+        els.toast.classList.remove('hidden');
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => els.toast.classList.add('hidden'), 2600);
+      }
+
+      function render() {
+        updateOverview();
+        renderCalendar();
+        setTimeout(scrollToUsefulTime, 30);
+      }
+
+      function scrollToUsefulTime() {
+        const now = new Date();
+        const selectedIsToday = getVisibleDates().includes(localISODate());
+        const targetHour = selectedIsToday ? Math.max(DAY_START, Math.min(DAY_END - 2, now.getHours() - 1)) : 7;
+        const hourHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+        const target = Math.max(0, (targetHour - DAY_START) * hourHeight);
+        if (Math.abs(els.calendarScroll.scrollTop - target) > hourHeight * 3) {
+          els.calendarScroll.scrollTop = target;
+        }
+      }
+
+      // Theme + language
+      applyTheme(initialTheme());
+      applyLanguage(currentLanguage, false);
+      els.themeBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = els.themeMenu?.classList.contains('hidden');
+        els.themeMenu?.classList.toggle('hidden', !willOpen);
+        els.themeBtn.setAttribute('aria-expanded', String(Boolean(willOpen)));
+        closeLanguageMenu();
+      });
+
+      els.themeOptions?.forEach((option) => {
+        option.addEventListener('click', () => {
+          applyTheme(option.dataset.themeOption);
+          closeThemeMenu();
+          renderCalendar();
+        });
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!els.themeControl?.contains(event.target)) closeThemeMenu();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') { closeThemeMenu(); closeLanguageMenu(); }
+      });
+
+      systemThemeMedia?.addEventListener?.('change', () => {
+        if (activeThemePreference === 'system') {
+          applyTheme('system');
+          renderCalendar();
+        }
+      });
+
+      // Language
+      els.languageBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = els.languageMenu?.classList.contains('hidden');
+        els.languageMenu?.classList.toggle('hidden', !willOpen);
+        els.languageBtn.setAttribute('aria-expanded', String(Boolean(willOpen)));
+        closeThemeMenu();
+      });
+
+      els.languageOptions?.forEach((option) => {
+        option.addEventListener('click', () => {
+          closeLanguageMenu();
+          applyLanguage(option.dataset.languageOption);
+        });
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!els.languageControl?.contains(event.target)) closeLanguageMenu();
+      });
+
+      // Header actions
+      document.getElementById('todayBtn').addEventListener('click', () => {
+        state.selectedDate = localISODate();
+        saveState();
+        render();
+      });
+
+      document.getElementById('prevBtn').addEventListener('click', () => {
+        state.selectedDate = addDays(state.selectedDate, state.view === 'week' ? -7 : -1);
+        saveState(); render();
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        state.selectedDate = addDays(state.selectedDate, state.view === 'week' ? 7 : 1);
+        saveState(); render();
+      });
+
+      document.querySelectorAll('.view-btn').forEach(btn => btn.addEventListener('click', () => {
+        state.view = btn.dataset.view;
+        saveState(); render();
+      }));
+
+      document.getElementById('addBtn').addEventListener('click', () => openEventModal());
+
+      document.getElementById('emergencyBtn').addEventListener('click', () => {
+        if (currentModeForSelectedDate()) {
+          if (confirm(t('alreadyRecovery'))) clearRecoveryMode();
+          return;
+        }
+        showModal(els.emergencyModal);
+      });
+
+      // Event modal actions
+      document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', () => hideModal(els.eventModal)));
+      els.eventModal.addEventListener('click', e => { if (e.target === els.eventModal) hideModal(els.eventModal); });
+
+      els.eventForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if (upsertEventFromForm()) {
+          hideModal(els.eventModal);
+          render();
+          showToast(t('routineSaved'));
+        }
+      });
+
+      els.deleteEventBtn.addEventListener('click', () => {
+        const id = els.eventId.value;
+        if (!id) return;
+        const event = state.events.find(e => e.id === id);
+        if (!event) return;
+        if (!confirm(t('deleteConfirm', { title: event.title }))) return;
+        state.events = state.events.filter(e => e.id !== id && e.compensationFor !== id);
+        saveState(); hideModal(els.eventModal); render(); showToast(t('routineDeleted'));
+      });
+
+      document.querySelectorAll('.status-btn').forEach(btn => btn.addEventListener('click', () => {
+        const id = els.eventId.value;
+        if (!id) return;
+        setEventStatus(id, btn.dataset.status);
+      }));
+
+
+      // Emergency actions
+      document.getElementById('emergencyClose').addEventListener('click', () => hideModal(els.emergencyModal));
+      els.emergencyModal.addEventListener('click', e => { if (e.target === els.emergencyModal) hideModal(els.emergencyModal); });
+      document.querySelectorAll('.emergency-reason').forEach(btn => btn.addEventListener('click', () => activateEmergency(btn.dataset.reason)));
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          [els.eventModal, els.emergencyModal].forEach(hideModal);
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          openEventModal();
+        }
+      });
+
+      // Keep current-time line reasonably fresh.
+      setInterval(() => {
+        const old = els.calendarBody.querySelector('.now-line');
+        if (old) old.remove();
+        renderNowLine();
+      }, 60_000);
+
+      window.addEventListener('resize', () => {
+        renderCalendar();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
