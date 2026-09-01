@@ -485,6 +485,7 @@
       const STORAGE_KEY = 'dayflow-routine-planner-v1';
       const THEME_KEY = 'dayflow-theme';
       const LANG_KEY = 'dayflow-language';
+      const NOTIFY_KEY = 'dayflow-notifications';
 
       const translations = {
         th: {
@@ -927,8 +928,8 @@
           const top = (topMin / 60) * hourHeight;
           const height = Math.max(24, (durMin / 60) * hourHeight);
           const meta = categoryMeta[event.category] || categoryMeta.low;
-          const statusIcon = event.status === 'done' ? '✓' : event.status === 'missed' ? '!' : '';
-          const statusClass = event.status === 'done' ? 'ring-2 ring-emerald-400/50 opacity-75' : event.status === 'missed' ? 'ring-2 ring-rose-400/60' : '';
+          const statusIcon = event.status === 'done' ? '✓' : event.status === 'missed' ? '!' : event.status === 'waiting' ? '⏳' : '';
+          const statusClass = event.status === 'done' ? 'ring-2 ring-emerald-400/50 opacity-75' : event.status === 'missed' ? 'ring-2 ring-rose-400/60' : event.status === 'waiting' ? 'ring-2 ring-amber-400/70' : '';
 
           const card = document.createElement('div');
           card.className = `event-card ${meta.classes} ${statusClass}`;
@@ -1274,6 +1275,71 @@
         showToast.timer = setTimeout(() => els.toast.classList.add('hidden'), 2600);
       }
 
+
+      // Smart Routine Accountability Engine v2.1
+
+      function getNotificationHistory() {
+        try { return JSON.parse(localStorage.getItem(NOTIFY_KEY)) || []; }
+        catch { return []; }
+      }
+
+      function saveNotificationHistory(items) {
+        localStorage.setItem(NOTIFY_KEY, JSON.stringify(items.slice(-100)));
+      }
+
+      function pushNotification(title, body) {
+        const history = getNotificationHistory();
+        const key = `${title}-${body}-${localISODate()}`;
+        if (history.some(n => n.key === key)) return;
+
+        history.push({ key, title, body, time: new Date().toISOString() });
+        saveNotificationHistory(history);
+
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(title, { body });
+        }
+
+        showToast(body);
+      }
+
+      function requestNotificationPermission() {
+        if ("Notification" in window && Notification.permission === "default") {
+          Notification.requestPermission();
+        }
+      }
+
+      function checkSmartRoutineEngine() {
+        const today = localISODate();
+        const now = new Date().getHours() * 60 + new Date().getMinutes();
+
+        state.events.filter(e => e.date === today).forEach(event => {
+          const start = timeToMinutes(event.start);
+          const diff = start - now;
+
+          if (diff === 15)
+            pushNotification("🔔 เตรียมตัว", `อีก 15 นาที: ${event.title}`);
+
+          if (diff === 5)
+            pushNotification("⏰ ใกล้ถึงเวลา", `${event.title} เริ่มใน 5 นาที`);
+
+          if (event.important && event.status === "planned" && diff <= 0 && diff >= -15) {
+            event.status = "waiting";
+            saveState();
+            render();
+            pushNotification("🔥 ยืนยันกิจวัตรสำคัญ", `${event.title} ต้องยืนยันภายใน 15 นาที`);
+          }
+
+          if (event.status === "waiting" && now - start > 15) {
+            event.status = "missed";
+            compensateMissedEvent(event);
+            saveState();
+            render();
+            pushNotification("❌ กิจวัตรล้มเหลว", `${event.title} ถูกส่งเข้าสู่ระบบชดเชย`);
+          }
+        });
+      }
+
+
       function render() {
         updateOverview();
         renderCalendar();
@@ -1434,6 +1500,9 @@
         renderCalendar();
       });
 
+      requestNotificationPermission();
+      checkSmartRoutineEngine();
+      setInterval(checkSmartRoutineEngine, 30000);
       render();
     })();
   </script>
