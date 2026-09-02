@@ -942,11 +942,27 @@
               <div class="min-w-0 flex-1">
                 <div class="truncate font-bold">${escapeHTML(event.title)}</div>
                 <div class="mt-0.5 truncate text-[10px] opacity-70">${event.start}–${event.end} ${statusIcon ? `• ${statusIcon}` : ''}</div>
+                ${event.status === 'waiting' ? `
+                  <button class="confirm-routine-btn mt-1 rounded-lg bg-amber-500 px-2 py-1 text-[10px] font-bold text-white hover:bg-amber-600">
+                    ✓ ยืนยัน
+                  </button>` : ''}
               </div>
             </div>
             <div class="resize-handle" title="${t('dragResize')}"></div>`;
 
           attachEventInteractions(card, event);
+
+          const confirmBtn = card.querySelector('.confirm-routine-btn');
+          if (confirmBtn) {
+            confirmBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              event.status = 'done';
+              saveState();
+              render();
+              showToast('✅ ยืนยันกิจวัตรสำเร็จแล้ว');
+            });
+          }
+
           column.appendChild(card);
         });
       }
